@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="583.0" prefWidth="784.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ViewController">
+   <children>
+      <Label layoutX="584.0" layoutY="55.0" text="Memoria">
+         <font>
+            <Font name="Bodoni MT Bold" size="19.0" />
+         </font></Label>
+      <TableView fx:id="tableView" layoutX="522.0" layoutY="121.0" prefHeight="359.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="colunaEndereco" prefWidth="75.0" text="Endereço" />
+          <TableColumn fx:id="colunaValor" prefWidth="75.0" text="Valor" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
