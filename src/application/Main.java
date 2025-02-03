@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class Main extends Application {
 
@@ -16,6 +17,8 @@ public class Main extends Application {
 			Parent parent = FXMLLoader.load(getClass().getResource("/gui/View.fxml"));
 			Scene scene = new Scene(parent);
 			stage.setScene(scene);
+			scene.getStylesheets().add(getClass().getResource("/application/application.css").toExternalForm());
+	        stage.initStyle(StageStyle.UTILITY);
 			stage.show();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -6,6 +6,11 @@ public class ListaMemoria {
 	private SimpleStringProperty endereco;
     private SimpleStringProperty valor;
 
+    public ListaMemoria(String endereco, String valor) {
+        this.endereco = new SimpleStringProperty(endereco);
+        this.valor = new SimpleStringProperty(valor);
+    }
+    
     public String getEndereco() {
         return endereco.get();
     }
@@ -18,12 +23,7 @@ public class ListaMemoria {
         return valor.get();
     }
 
-    public void setValor(SimpleStringProperty valor) {
-        this.valor = valor;
-    }
-
-    public ListaMemoria(String endereco, String valor) {
-        this.endereco = new SimpleStringProperty(endereco);
+    public void setValor(String valor) {
         this.valor = new SimpleStringProperty(valor);
     }
 }

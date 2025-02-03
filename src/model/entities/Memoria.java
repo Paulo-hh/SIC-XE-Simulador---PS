@@ -1,39 +1,55 @@
 package model.entities;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Memoria implements Serializable {
-
-	 ArrayList<Object> memoria = new ArrayList<Object>(500);
-
-	    private final int max_size = 500; //Cada posição corresponde à uma palavra de 16bits - No total a memória terá 1KB
-
-	    ListaMemoria listaMemoria;
-
-	    /*Construtor da memoria*/
-	    public Memoria (ObservableList<ListaMemoria> list){ //Inicializa toda a memória
-	       for (Integer i = 0;i<max_size;i++){
-	           memoria.add(null); //Preenche a pilha com NULL
-	           list.add(i, new ListaMemoria(i.toString(), "0"));
-	        }
-
-	        memoria.set(2,10); 
-	        list.set(2, new ListaMemoria("2","10"));
-	    }
-	    
-	    public void set_element (int index, Integer element){
-	        memoria.set(index,element);
-	    }
-
-	    public void set_string (int index, String element){
-	        memoria.set(index,element);
-	    }
-
-	    public Object get(int index) {
-	        return memoria.get(index);
-	    }
+public class Memoria {
+	private ObservableList<ListaMemoria> memoria = FXCollections.observableArrayList();
+	
+	public Memoria() {
+		for(int i=0; i<256; i++) {
+			memoria.add(new ListaMemoria(Integer.toString(i), "00"));
+		}
+	}
+	
+	public ObservableList<ListaMemoria> obterListaMemoria(){
+		return memoria;
+	}
+	
+	public String getMemoria(String endereco) {
+		Integer dec = Func.hexa_para_Int(endereco);
+		
+		if(dec == null) {
+			return null;
+		}
+		
+		if(dec < 0 || dec > 256) {
+			return null;
+		}
+		
+		return memoria.get(dec).getValor();
+	}
+	
+	public Boolean setMemoria(String endereco, String byte_valor) {
+		Integer dec_endereco = Func.hexa_para_Int(endereco);
+		Integer dec_byte = Func.hexa_para_Int(byte_valor);
+		
+		if(dec_endereco == null || dec_byte == null) {
+			return false;
+		}
+		
+		if(dec_endereco < 0 || dec_endereco > 256) {
+			return false;
+		}
+		memoria.get(dec_endereco).setValor(byte_valor);
+		return true;
+	}
+	
+	public void imprimirMemoria() { 
+		for(int i=0; i<256; i++) {
+			System.out.println(i + " -> " + Func.hexa_para_Int(memoria.get(i).getValor()));
+			
+		}
+	}
 	
 }
