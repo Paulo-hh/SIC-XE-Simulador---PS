@@ -5,9 +5,9 @@ public class Func {
     public static String encontrarValor(int valor, String hexaValor, int tamanho) {
         String novoHexa = hexaValor;
         if (valor >= 0) {
-            novoHexa = Func.tamString(novoHexa, tamanho * 2);
+            novoHexa = Func.preencherZeros(novoHexa, tamanho * 2);
         } else {
-            novoHexa = Func.tamSpace(novoHexa, tamanho * 2);
+            novoHexa = Func.preencherF(novoHexa, tamanho * 2);
         }
         return novoHexa;
     }
@@ -37,25 +37,12 @@ public class Func {
         }
     }
 
-    public static String asciiParaHex(String valor) {
-    	return Integer.toHexString(Integer.parseInt(valor)).toUpperCase();
-    }
-
     public static String somarHexa(String x, String y) {
         if (x.length() != y.length()) {
             System.out.println("hexas ilegais");
         }
         int tamanho = x.length() * 4;
         int resultado = hexa_para_Int(x) + hexa_para_Int(y);
-        return int_para_Hexa(resultado, tamanho);
-    }
-
-    public static String subtrairHexa(String x, String y){
-        if (x.length() != y.length()) {
-            System.out.println("hexas ilegais");
-        }
-        int tamanho = x.length() * 4;
-        int resultado = hexa_para_Int(x) - hexa_para_Int(y);
         return int_para_Hexa(resultado, tamanho);
     }
 
@@ -80,7 +67,7 @@ public class Func {
         return listaBytes;
     }
     
-    public static String tamString(String endereco, int tam) {
+    public static String preencherZeros(String endereco, int tam) {
     	String resultado = endereco;
     	if(endereco == null) {
     		return null;
@@ -102,11 +89,11 @@ public class Func {
     	}
     }
     
-    public static String tamSpace(String endereco, int tam) {
+    public static String preencherF(String endereco, int tam) {
     	String resultado = endereco;
     	if(endereco.length() < tam) {
     		for(int i=endereco.length(); i<tam; i++) {
-    			String novo = " ";
+    			String novo = "F";
     			resultado = novo + resultado;
     		}
     		return resultado;

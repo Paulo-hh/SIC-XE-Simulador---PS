@@ -1,6 +1,35 @@
 .root{
-  -fx-background-color: linear-gradient(#00008A, #87CEFA);
+ -fx-background-color: linear-gradient(#cc9900, #FFFFCC);
 }
+
+/* Estilizando o TextArea */
+.text-area {
+    -fx-background-color: #0f0f0f;
+    -fx-border-color: #3498db;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2a9000;
+}
+
+/* Estilizando a área de texto interna */
+.text-area .content {
+    -fx-background-color: #0f0f0f;
+    -fx-border-radius: 5px;
+}
+
+/* Adicionando efeito ao passar o mouse */
+.text-area:hover {
+    -fx-border-color: #2980b9;
+}
+
+/* Adicionando efeito de foco */
+.text-area:focused {
+    -fx-border-color: #2ecc71;
+    -fx-background-color: #eafaf1;
+}
+
 
 .button{
     -fx-background-color: #5c555c;
@@ -54,4 +83,28 @@
 /* Ajusta o efeito quando o mouse passa sobre uma linha */
 .table-row-cell:hover {
     -fx-background-color: #d5dbdb;
+}
+
+
+/* Estilizando o Label */
+.label {
+    -fx-font-size: 20px;
+    -fx-text-fill: #000033;
+    -fx-padding: 5px;
+    -fx-font-weight: bold;
+    -fx-background-fills: transparent;
+    -fx-alignment: center;
+}
+
+
+
+/* Alterando a cor ao passar o mouse */
+.label:hover {
+    -fx-text-fill: #e90623;
+}
+
+/* Adicionando estilo quando o Label estiver destacado */
+.label-highlight {
+    -fx-font-weight: bold;
+    -fx-text-fill: #e74c3c;
 }

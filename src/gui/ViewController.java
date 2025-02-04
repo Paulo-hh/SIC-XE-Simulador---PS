@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -92,7 +93,6 @@ public class ViewController implements Initializable {
 	
 	@FXML
 	public void onBtLimpar() throws Exception{
-		textoArea.clear();
 	}
 	
 	@FXML

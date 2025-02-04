@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gui.ViewController;
-
 public class Operacoes {
 
 	private List<Instrucao> instrucoes = new ArrayList<>();
@@ -36,21 +34,18 @@ public class Operacoes {
 	public void atribuirEndereco() {
 		if (instrucoes == null || instrucoes.isEmpty()) {
 			textoSaida.concat("\nPor favor, carregue um arquivo");
-			System.out.println("Por favor, carregue um arquivo");
 			return;
 		}
-
 		ponteiroInstrucao = 0;
 
 		for (Instrucao instrucao : instrucoes) {
-			if (instrucao.getNome().equals("START")) {
+			if (instrucao.getNome().equals("START")) { // no start, deve ter um endereço inicial na memoria
 				if (instrucao.getArgs().get(0).length() != comprimentoEndereco) {
 					throw new IllegalArgumentException("Endereço inválido na linha: " + instrucao.getNumero_linha());
 				}
 				proximoEndereco = instrucao.getArgs().get(0);
 				continue;
 			}
-
 			if (instrucao.getNome().equals("END")) {
 				continue;
 			}
@@ -60,50 +55,37 @@ public class Operacoes {
 			if (instrucao.getNome().equals("WORD")) {
 				String valor_string;
 				String aux3 = Func.int_para_Hexa(Integer.parseInt(instrucao.getArgs().get(0)), 16);
-				valor_string = Func.tamString(aux3, 6);
+				valor_string = Func.preencherZeros(aux3, 6);
 				for (int i = 0; i < 6; i += 2) {
 					conjuntoMemoria.setMemoria(proximoEndereco, valor_string.substring(i, i + 2));
-					proximoEndereco = Func.somarHexa(proximoEndereco, Func.tamString("1", comprimentoEndereco))
+					proximoEndereco = Func.somarHexa(proximoEndereco, Func.preencherZeros("1", comprimentoEndereco))
 							.toUpperCase();
-					proximoEndereco = Func.tamString(proximoEndereco, comprimentoEndereco);
+					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 				}
 
 			} else if (determinar_Instrucao(instrucao.getNome()) == -1) {
-				System.out.println("ERRO: nome de instrução inválida na linha " + instrucao.getNumero_linha().toString());
-				System.out.println("Saindo do interpretador");
 				textoSaida = textoSaida.concat("\nERRO: nome de instrução inválida na linha " + instrucao.getNumero_linha().toString());
 				textoSaida = textoSaida.concat("\nSaindo do interpretador");
 				ponteiroInstrucao = -1;
 				break;
 			} else {
-				proximoEndereco = Func.somarHexa(proximoEndereco, Func.tamString("3", comprimentoEndereco));
-				proximoEndereco = Func.tamString(proximoEndereco, comprimentoEndereco);
+				proximoEndereco = Func.somarHexa(proximoEndereco, Func.preencherZeros("3", comprimentoEndereco));
+				proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 			}
 		}
 	}
 
 	public Boolean executar_Proxima_Instrucao() throws Exception {
-		if (ponteiroInstrucao == -1) {
-			System.out.println("Nenhum código foi carregado");
-			textoSaida = textoSaida.concat("\nNenhum código foi carregado");
-			return false;
-		}
-		if (ponteiroInstrucao == instrucoes.size()) {
-			System.out.println("Fim do código");
+		if (ponteiroInstrucao == -1 || ponteiroInstrucao == instrucoes.size() || 
+				instrucoes.get(ponteiroInstrucao).getNome().equals("END")) {
 			textoSaida = textoSaida.concat("\nFim do código");
 			ponteiroInstrucao = -1;
 			return false;
 		}
-		if (instrucoes.get(ponteiroInstrucao).getNome().equals("END")) {
-			System.out.println("Fim do código");
-			textoSaida = textoSaida.concat("\nFim do código");
-			ponteiroInstrucao = -1;
-			return false;
-		}
-		while (instrucoes.get(ponteiroInstrucao).getNome().equals("WORD") || instrucoes.get(ponteiroInstrucao).getNome().equals("START")) {
+		while (instrucoes.get(ponteiroInstrucao).getNome().equals("WORD") 
+				|| instrucoes.get(ponteiroInstrucao).getNome().equals("START")) {
 			ponteiroInstrucao++;
 			if (ponteiroInstrucao == instrucoes.size()) {
-				System.out.println("Fim do código");
 				textoSaida = textoSaida.concat("\nFim do código");
 				ponteiroInstrucao = -1;
 				return false;
@@ -114,31 +96,26 @@ public class Operacoes {
 		ponteiroInstrucao++;
 		String nome_Instrucao = linha_Instrucao.getNome();
 		List<String> argumentos_Instrucao = new ArrayList<>();
-		for (String s : linha_Instrucao.getArgs()) {
-			argumentos_Instrucao.add(s);
-		}
+		linha_Instrucao.getArgs().forEach(s -> argumentos_Instrucao.add(s));
 		Instrucao instrucao_atual;
 		int tamanho_atual;
 		textoSaida = textoSaida.concat("\nExecutando instrução: " + linha_Instrucao.getNome());
-		System.out.println("Executando instrução: " + linha_Instrucao.getNome());
-
 		int token_Instrucao = determinar_Instrucao(nome_Instrucao);
-		if (token_Instrucao == 2 || token_Instrucao == 4 || token_Instrucao == 8 || token_Instrucao == 10
-				|| token_Instrucao == 22 || token_Instrucao == 24 || token_Instrucao == 36 || token_Instrucao == 38) {
-			tamanho_atual = 0;
-			instrucao_atual = null;
-		} else if (argumentos_Instrucao.size() != 0 && argumentos_Instrucao.get(0).substring(0, 1) != "X"
-				&& argumentos_Instrucao.get(0).substring(0, 1) != "#") {
+		List<Integer> tokens = Arrays.asList(2, 4, 8, 10, 22, 24, 36, 38);
+		
+		if (!tokens.contains(token_Instrucao) && argumentos_Instrucao.size() != 0 
+				&& argumentos_Instrucao.get(0).substring(0, 1) != "X" && argumentos_Instrucao.get(0).substring(0, 1) != "#") {
 			if (argumentos_Instrucao.get(0).substring(0, 1) == "@") {
 				instrucao_atual = obterInstrucao(argumentos_Instrucao.get(0).substring(1));
 			} else {
 				instrucao_atual = obterInstrucao(argumentos_Instrucao.get(0));
 			}
 			tamanho_atual = (instrucao_atual.getNome().equals("WORD")) ? 3 : 0;
-		} else {
+		}
+		else {
 			tamanho_atual = 0;
 			instrucao_atual = null;
-		}
+		} 
 
 		String endereco = (instrucao_atual != null) 
 				? resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao) 
@@ -157,7 +134,7 @@ public class Operacoes {
 
 		if (proximoPonteiroInstrucao < instrucoes.size()) {
 			registradores.setRegistrador("PC",
-			Func.tamString(instrucoes.get(proximoPonteiroInstrucao).getEndereco(), 6));
+			Func.preencherZeros(instrucoes.get(proximoPonteiroInstrucao).getEndereco(), 6));
 		}
 		return true;
 	}
@@ -227,7 +204,6 @@ public class Operacoes {
 		}
 
 		switch (tokenInstrucao) {
-
 		case 1: // ADD
 			int memoriaInt = Func.hexa_para_Int(dadoHexa);
 			int valorADD = Func.hexa_para_Int(registradores.getRegistrador("A"));
@@ -408,7 +384,7 @@ public class Operacoes {
 			int valor_OR = Integer.parseInt(registradores.getRegistrador("A"));
 			int valorMemoria = Func.hexa_para_Int(obterDado(enderecoInicial, tamanhoAtual));
 			valor_OR |= valorMemoria;
-			registradores.setRegistrador("A", Func.tamString(Integer.toString(valor_OR), 6));
+			registradores.setRegistrador("A", Func.preencherZeros(Integer.toString(valor_OR), 6));
 			break;
 
 		case 24: // RMO
@@ -431,14 +407,14 @@ public class Operacoes {
 			int valorReg1 = Integer.parseInt(registradores.getRegistrador(argumentos.get(0)));
 			int valorShiftr = Integer.parseInt(argumentos.get(1));
 			valorReg1 = valorReg1 >> valorShiftr;
-			registradores.setRegistrador(argumentos.get(0), Func.tamString(Integer.toString(valorReg1), 6));
+			registradores.setRegistrador(argumentos.get(0), Func.preencherZeros(Integer.toString(valorReg1), 6));
 			break;
 
 		case 27: // SHIFTL
 			int valorReg2 = Integer.parseInt(registradores.getRegistrador(argumentos.get(0)));
 			int valorShiftl = Integer.parseInt(argumentos.get(1));
 			valorReg2 = valorReg2 << valorShiftl;
-			registradores.setRegistrador(argumentos.get(0), Func.tamString(Integer.toString(valorReg2), 6));
+			registradores.setRegistrador(argumentos.get(0), Func.preencherZeros(Integer.toString(valorReg2), 6));
 			break;
 
 		case 28: // STA
@@ -447,7 +423,7 @@ public class Operacoes {
 			for (String a : dividirBytes(valorA)) {
 				conjuntoMemoria.setMemoria(enderecoA, a);
 				enderecoA = Func.int_para_Hexa(Func.hexa_para_Int(enderecoA) + 1, 16);
-				enderecoA = Func.tamString(enderecoA, 4);
+				enderecoA = Func.preencherZeros(enderecoA, 4);
 			}
 			break;
 
@@ -457,7 +433,7 @@ public class Operacoes {
 			for (String a : dividirBytes(valorB)) {
 				conjuntoMemoria.setMemoria(enderecoB, a);
 				enderecoB = Func.int_para_Hexa(Func.hexa_para_Int(enderecoB) + 1, 16);
-				enderecoB = Func.tamString(enderecoB, 4);
+				enderecoB = Func.preencherZeros(enderecoB, 4);
 			}
 			break;
 
@@ -472,7 +448,7 @@ public class Operacoes {
 			for (String a : dividirBytes(valorL)) {
 				conjuntoMemoria.setMemoria(enderecoL, a);
 				enderecoL = Func.int_para_Hexa(Func.hexa_para_Int(enderecoL) + 1, 16);
-				enderecoL = Func.tamString(enderecoL, 4);
+				enderecoL = Func.preencherZeros(enderecoL, 4);
 			}
 			break;
 
@@ -482,7 +458,7 @@ public class Operacoes {
 			for (String a : dividirBytes(valorS)) {
 				conjuntoMemoria.setMemoria(enderecoS, a);
 				enderecoS = Func.int_para_Hexa(Func.hexa_para_Int(enderecoS) + 1, 16);
-				enderecoS = Func.tamString(enderecoS, 4);
+				enderecoS = Func.preencherZeros(enderecoS, 4);
 			}
 			break;
 
@@ -492,7 +468,7 @@ public class Operacoes {
 			for (String a : dividirBytes(valorT)) {
 				conjuntoMemoria.setMemoria(enderecoT, a);
 				enderecoT = Func.int_para_Hexa(Func.hexa_para_Int(enderecoT) + 1, 16);
-				enderecoT = Func.tamString(enderecoT, 4);
+				enderecoT = Func.preencherZeros(enderecoT, 4);
 			}
 			break;
 
@@ -502,7 +478,7 @@ public class Operacoes {
 			for (String a : dividirBytes(valorX)) {
 				conjuntoMemoria.setMemoria(enderecoX, a);
 				enderecoX = Func.int_para_Hexa(Func.hexa_para_Int(enderecoX) + 1, 16);
-				enderecoX = Func.tamString(enderecoX, 4);
+				enderecoX = Func.preencherZeros(enderecoX, 4);
 			}
 			break;
 
@@ -554,13 +530,13 @@ public class Operacoes {
 	}
 
 	public String resolverEndereco(String endereco_inicial, List<String> argumentos) throws Exception {
-		String aux = Func.tamString(endereco_inicial, 6);
+		String aux = Func.preencherZeros(endereco_inicial, 6);
 
 		// endereçamento indexado
 		if (argumentos.size() == 2 && argumentos.get(1) == "X") {
 			String valorX = registradores.getRegistrador("X");
 			String endereco = Func.somarHexa(valorX, aux);
-			endereco = Func.tamString(endereco, 4);
+			endereco = Func.preencherZeros(endereco, 4);
 			return endereco;
 		}
 
@@ -572,7 +548,7 @@ public class Operacoes {
 		// Endereçamento indireto
 		if (argumentos.size() != 0 && argumentos.get(0).substring(0, 1) == "@") {
 			Instrucao instrucao = obterInstrucao(argumentos.get(0).substring(1));
-			String x = Func.tamString("1", comprimentoEndereco);
+			String x = Func.preencherZeros("1", comprimentoEndereco);
 			String endereco = conjuntoMemoria.getMemoria(instrucao.getEndereco())
 					+ conjuntoMemoria.getMemoria(Func.somarHexa(instrucao.getEndereco(), x));
 			return endereco;
@@ -594,8 +570,8 @@ public class Operacoes {
 		String memoriaStringHexa = "";
 		for (int i = 0; i < tamanho; i++) {
 			memoriaStringHexa = memoriaStringHexa.concat(conjuntoMemoria.getMemoria(endereco));
-			endereco = Func.somarHexa(endereco, Func.tamString("1", comprimentoEndereco)).toUpperCase();
-			endereco = Func.tamString(endereco, 4);
+			endereco = Func.somarHexa(endereco, Func.preencherZeros("1", comprimentoEndereco)).toUpperCase();
+			endereco = Func.preencherZeros(endereco, 4);
 		}
 		return memoriaStringHexa;
 	}
