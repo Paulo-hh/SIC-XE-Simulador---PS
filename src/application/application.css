@@ -9,21 +9,13 @@
     -fx-font-weight: bold;
     -fx-alignment: CENTER;
 }
-/* Estiliza um Label no JavaFX */
-.label {
-    -fx-font-size: 16px;
-    -fx-text-fill: #2c3e50;
-    -fx-font-weight: bold;
-    -fx-padding: 10px;
-}
 
-/* Adiciona um fundo ao Label */
-.label-background {
-    -fx-background-color: #ecf0f1;
-    -fx-background-radius: 5px;
-    -fx-padding: 10px;
+.label{
+    -fx-text-fill: #000000;
+    -fx-background-color: 66CDAA;
+    -fx-background-radius: 10;
+    
 }
-
 
 /* Estiliza o cabeçalho da tabela */
 .table-view .column-header-background {

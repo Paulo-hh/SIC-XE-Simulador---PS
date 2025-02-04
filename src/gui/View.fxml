@@ -11,11 +11,11 @@
 
 <AnchorPane prefHeight="675.0" prefWidth="916.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.ViewController">
    <children>
-      <Label layoutX="657.0" layoutY="66.0" prefHeight="38.0" prefWidth="107.0" text="Memoria" AnchorPane.rightAnchor="151.79999999999995" AnchorPane.topAnchor="66.0">
+      <Label layoutX="681.0" layoutY="66.0" prefHeight="38.0" prefWidth="107.0" text="Memoria" AnchorPane.leftAnchor="680.0" AnchorPane.topAnchor="70.0">
          <font>
             <Font size="26.0" />
          </font></Label>
-      <TableView fx:id="tableView" layoutX="573.0" layoutY="129.0" prefHeight="442.0" prefWidth="276.0" AnchorPane.rightAnchor="67.0" AnchorPane.topAnchor="129.0">
+      <TableView fx:id="tableView" layoutX="597.0" layoutY="129.0" prefHeight="442.0" prefWidth="276.0" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="130.0">
         <columns>
           <TableColumn fx:id="colunaEndereco" prefWidth="127.199951171875" text="Endereço" />
           <TableColumn fx:id="colunaValor" prefWidth="104.7999267578125" text="Valor" />
@@ -24,89 +24,91 @@
             <Insets />
          </opaqueInsets>
       </TableView>
-      <TextArea fx:id="textoArea" layoutX="64.0" layoutY="139.0" prefHeight="265.0" prefWidth="306.0" />
-      <Button fx:id="proximo" layoutX="310.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtProximoAction" text="Proximo" />
-      <Button fx:id="rodar" layoutX="258.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtRodarAction" text="Rodar" />
-      <Label layoutX="178.0" layoutY="66.0" prefHeight="38.0" prefWidth="107.0" text="Código">
+      <TextArea fx:id="textoArea" layoutX="64.0" layoutY="139.0" prefHeight="265.0" prefWidth="306.0" AnchorPane.leftAnchor="55.0" AnchorPane.topAnchor="130.0" />
+      <Button fx:id="proximo" layoutX="255.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtProximoAction" text="Proximo" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="395.0" />
+      <Button fx:id="rodar" layoutX="203.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtRodarAction" text="Rodar" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="395.0" />
+      <Label layoutX="178.0" layoutY="66.0" prefHeight="38.0" prefWidth="107.0" text="SIC-XE" AnchorPane.leftAnchor="170.0" AnchorPane.topAnchor="70.0">
          <font>
             <Font size="26.0" />
          </font>
       </Label>
-      <Label layoutX="150.0" layoutY="460.0" prefHeight="38.0" prefWidth="164.0" text="Registradores">
+      <Label layoutX="391.0" layoutY="66.0" prefHeight="38.0" prefWidth="164.0" text="Registradores" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="70.0">
          <font>
             <Font size="26.0" />
          </font>
       </Label>
-      <Label layoutX="64.0" layoutY="510.0" text="A">
+      <Label layoutX="420.0" layoutY="146.0" text="A" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="150.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="64.0" layoutY="545.0" text="X">
+      <Label layoutX="420.0" layoutY="199.0" text="X" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="200.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="64.0" layoutY="580.0" text="L">
+      <Label layoutX="421.0" layoutY="244.0" text="L" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="250.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="211.0" layoutY="510.0" text="B">
+      <Label layoutX="420.0" layoutY="288.0" text="B" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="300.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="210.0" layoutY="545.0" text="S">
+      <Label layoutX="421.0" layoutY="350.0" text="S" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="350.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="209.0" layoutY="580.0" text="T">
+      <Label layoutX="419.0" layoutY="404.0" text="T" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="400.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label layoutX="340.0" layoutY="510.0" text="PC">
+      <Label layoutX="415.0" layoutY="456.0" text="PC" AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="450.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="A" layoutX="90.0" layoutY="510.0">
+      <Label fx:id="A" layoutX="90.0" layoutY="510.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="150.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="X" layoutX="84.0" layoutY="545.0">
+      <Label fx:id="X" layoutX="84.0" layoutY="545.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="200.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="L" layoutX="86.0" layoutY="580.0">
+      <Label fx:id="L" layoutX="86.0" layoutY="580.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="250.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="B" layoutX="232.0" layoutY="510.0">
+      <Label fx:id="B" layoutX="232.0" layoutY="510.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="300.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="S" layoutX="227.0" layoutY="545.0">
+      <Label fx:id="S" layoutX="227.0" layoutY="545.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="350.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="T" layoutX="227.0" layoutY="580.0">
+      <Label fx:id="T" layoutX="227.0" layoutY="580.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="400.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Label fx:id="PC" layoutX="370.0" layoutY="510.0">
+      <Label fx:id="PC" layoutX="370.0" layoutY="510.0" AnchorPane.leftAnchor="480.0" AnchorPane.topAnchor="450.0">
          <font>
             <Font size="18.0" />
          </font>
       </Label>
-      <Button fx:id="enviar" layoutX="208.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtEnviarAction" text="Enviar" />
+      <Button fx:id="enviar" layoutX="154.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtEnviarAction" text="Enviar" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="395.0" />
+      <Button fx:id="limpar" layoutX="313.0" layoutY="405.0" mnemonicParsing="false" onAction="#onBtProximoAction" text="Limpar" AnchorPane.leftAnchor="310.0" AnchorPane.topAnchor="395.0" />
+      <TextArea fx:id="saida" layoutX="31.2" layoutY="436.0" prefHeight="146.0" prefWidth="346.0" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="445.0" />
    </children>
 </AnchorPane>

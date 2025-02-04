@@ -1,8 +1,5 @@
 package model.entities;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,9 +62,6 @@ public class Instrucao {
 			String linha = linhas[i];
 			List<String> args_array = new ArrayList<>();
 			List<String> listaEntrada = new ArrayList<>();
-			if (linha.substring(0) == "." || linha.length() == 0) {
-				continue;
-			}
 			for (String b : linha.split(",|\\s+")) {
 				listaEntrada.add(b);
 			}

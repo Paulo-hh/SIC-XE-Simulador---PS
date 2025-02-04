@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.entities.Func;
 import model.entities.Instrucao;
 import model.entities.ListaMemoria;
 import model.entities.Memoria;
@@ -44,6 +45,9 @@ public class ViewController implements Initializable {
 	private Button rodar;
 	
 	@FXML
+	private Button limpar;
+	
+	@FXML
 	private Button proximo;
 	
 	@FXML
@@ -71,15 +75,24 @@ public class ViewController implements Initializable {
 	private Label PC;
 	
 	@FXML
+	private TextArea saida;
+	
+	@FXML
 	public void onBtRodarAction() throws Exception {
 		while (true) {
 			boolean ok = operacao.executar_Proxima_Instrucao();
 			mostrarRegistradores();
 	        tableView.setItems(getLista());
+	    	saida.setText(operacao.getTextoSaida());
 			if (ok == false) {
 				break;
 			}
 		}
+	}
+	
+	@FXML
+	public void onBtLimpar() throws Exception{
+		textoArea.clear();
 	}
 	
 	@FXML
@@ -88,6 +101,7 @@ public class ViewController implements Initializable {
 		lista_instrucao = Instrucao.lerTexto(texto);
 		operacao = new Operacoes(lista_instrucao, memoria, registrador);
 		operacao.atribuirEndereco();
+    	saida.setText(operacao.getTextoSaida());
 	}
 	
 	@FXML
@@ -95,6 +109,7 @@ public class ViewController implements Initializable {
 		operacao.executar_Proxima_Instrucao();
 		mostrarRegistradores();
         tableView.setItems(getLista());
+    	saida.setText(operacao.getTextoSaida());
 	}
 	
     @Override
@@ -109,12 +124,13 @@ public class ViewController implements Initializable {
     }
     
     public void mostrarRegistradores() {
-    	A.setText(registrador.getRegistrador("A"));
-    	X.setText(registrador.getRegistrador("X"));
-    	L.setText(registrador.getRegistrador("L"));
-    	B.setText(registrador.getRegistrador("B"));
-    	S.setText(registrador.getRegistrador("S"));
-    	T.setText(registrador.getRegistrador("T"));
-    	PC.setText(registrador.getRegistrador("PC"));
+    	A.setText(Func.hexa_para_Int(registrador.getRegistrador("A")).toString());
+    	X.setText(Func.hexa_para_Int(registrador.getRegistrador("X")).toString());
+    	L.setText(Func.hexa_para_Int(registrador.getRegistrador("L")).toString());
+    	B.setText(Func.hexa_para_Int(registrador.getRegistrador("B")).toString());
+    	S.setText(Func.hexa_para_Int(registrador.getRegistrador("S")).toString());
+    	T.setText(Func.hexa_para_Int(registrador.getRegistrador("T")).toString());
+    	PC.setText(Func.hexa_para_Int(registrador.getRegistrador("PC")).toString());
     }
+    
 }

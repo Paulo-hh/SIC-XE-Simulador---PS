@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gui.ViewController;
+
 public class Operacoes {
 
 	private List<Instrucao> instrucoes = new ArrayList<>();
@@ -17,7 +19,11 @@ public class Operacoes {
 	private String proximoEndereco;
 	private String palavrasCondicoes = "";
 	private static final int comprimentoEndereco = 4;
+	private String textoSaida = "programa: ";
 
+	public String getTextoSaida() {
+		return textoSaida;
+	}
 	private static final List<String> condicoes = Arrays.asList("LT", "GT", "EQ");
 
 	public Operacoes(List<Instrucao> arrayInstrucoes, Memoria memoria, Registrador regs) {
@@ -29,6 +35,7 @@ public class Operacoes {
 
 	public void atribuirEndereco() {
 		if (instrucoes == null || instrucoes.isEmpty()) {
+			textoSaida.concat("\nPor favor, carregue um arquivo");
 			System.out.println("Por favor, carregue um arquivo");
 			return;
 		}
@@ -62,8 +69,10 @@ public class Operacoes {
 				}
 
 			} else if (determinar_Instrucao(instrucao.getNome()) == -1) {
-				System.out.println("ERROR: Invalid instruction name on line " + instrucao.getNumero_linha().toString());
-				System.out.println("Exiting interpreter");
+				System.out.println("ERRO: nome de instrução inválida na linha " + instrucao.getNumero_linha().toString());
+				System.out.println("Saindo do interpretador");
+				textoSaida = textoSaida.concat("\nERRO: nome de instrução inválida na linha " + instrucao.getNumero_linha().toString());
+				textoSaida = textoSaida.concat("\nSaindo do interpretador");
 				ponteiroInstrucao = -1;
 				break;
 			} else {
@@ -75,23 +84,27 @@ public class Operacoes {
 
 	public Boolean executar_Proxima_Instrucao() throws Exception {
 		if (ponteiroInstrucao == -1) {
-			System.out.println("No file loaded please parse then start");
+			System.out.println("Nenhum código foi carregado");
+			textoSaida = textoSaida.concat("\nNenhum código foi carregado");
 			return false;
 		}
 		if (ponteiroInstrucao == instrucoes.size()) {
-			System.out.println("End of file");
+			System.out.println("Fim do código");
+			textoSaida = textoSaida.concat("\nFim do código");
 			ponteiroInstrucao = -1;
 			return false;
 		}
 		if (instrucoes.get(ponteiroInstrucao).getNome().equals("END")) {
-			System.out.println("End of file");
+			System.out.println("Fim do código");
+			textoSaida = textoSaida.concat("\nFim do código");
 			ponteiroInstrucao = -1;
 			return false;
 		}
 		while (instrucoes.get(ponteiroInstrucao).getNome().equals("WORD") || instrucoes.get(ponteiroInstrucao).getNome().equals("START")) {
 			ponteiroInstrucao++;
 			if (ponteiroInstrucao == instrucoes.size()) {
-				System.out.println("End of file");
+				System.out.println("Fim do código");
+				textoSaida = textoSaida.concat("\nFim do código");
 				ponteiroInstrucao = -1;
 				return false;
 			}
@@ -106,7 +119,8 @@ public class Operacoes {
 		}
 		Instrucao instrucao_atual;
 		int tamanho_atual;
-		System.out.println("Executing instruction: " + linha_Instrucao.getNome());
+		textoSaida = textoSaida.concat("\nExecutando instrução: " + linha_Instrucao.getNome());
+		System.out.println("Executando instrução: " + linha_Instrucao.getNome());
 
 		int token_Instrucao = determinar_Instrucao(nome_Instrucao);
 		if (token_Instrucao == 2 || token_Instrucao == 4 || token_Instrucao == 8 || token_Instrucao == 10
@@ -126,13 +140,9 @@ public class Operacoes {
 			instrucao_atual = null;
 		}
 
-		String endereco;
-		// Starting address of target data
-		if (instrucao_atual != null) {
-			endereco = resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao);
-		} else {
-			endereco = resolverEndereco(null, argumentos_Instrucao);
-		}
+		String endereco = (instrucao_atual != null) 
+				? resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao) 
+				: resolverEndereco(null, argumentos_Instrucao);
 
 		usar_Token(token_Instrucao, nome_Instrucao, endereco, tamanho_atual, argumentos_Instrucao,
 				linha_Instrucao.getNumero_linha());
@@ -147,7 +157,7 @@ public class Operacoes {
 
 		if (proximoPonteiroInstrucao < instrucoes.size()) {
 			registradores.setRegistrador("PC",
-					Func.tamString(instrucoes.get(proximoPonteiroInstrucao).getEndereco(), 6));
+			Func.tamString(instrucoes.get(proximoPonteiroInstrucao).getEndereco(), 6));
 		}
 		return true;
 	}
@@ -276,6 +286,8 @@ public class Operacoes {
 			if (novoIndiceJ == -1) {
 				System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 				System.out.println("Encerrando interpretador");
+				textoSaida = textoSaida.concat("\nERRO: Salto ilegal para rótulo na linha " + numLinha);
+				textoSaida = textoSaida.concat("\nEncerrando interpretador");
 				ponteiroInstrucao = -1;
 				return;
 			}
@@ -289,6 +301,8 @@ public class Operacoes {
 				if (novoIndiceJEQ == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 					System.out.println("Encerrando interpretador");
+					textoSaida = textoSaida.concat("\nERRO: Salto ilegal para rótulo na linha " + numLinha);
+					textoSaida = textoSaida.concat("\nEncerrando interpretador");
 					ponteiroInstrucao = -1;
 					return;
 				}
@@ -303,6 +317,8 @@ public class Operacoes {
 				if (novoIndiceJGT == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 					System.out.println("Encerrando interpretador");
+					textoSaida = textoSaida.concat("\nERRO: Salto ilegal para rótulo na linha " + numLinha);
+					textoSaida = textoSaida.concat("\nEncerrando interpretador");
 					ponteiroInstrucao = -1;
 					return;
 				}
@@ -317,6 +333,8 @@ public class Operacoes {
 				if (novoIndiceJLT == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 					System.out.println("Encerrando interpretador");
+					textoSaida = textoSaida.concat("\nERRO: Salto ilegal para rótulo na linha " + numLinha);
+					textoSaida = textoSaida.concat("\nEncerrando interpretador");
 					ponteiroInstrucao = -1;
 					return;
 				}
@@ -334,6 +352,8 @@ public class Operacoes {
 			if (novoIndiceJSUB == -1) {
 				System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 				System.out.println("Encerrando interpretador");
+				textoSaida = textoSaida.concat("\nERRO: Salto ilegal para rótulo na linha " + numLinha);
+				textoSaida = textoSaida.concat("\nEncerrando interpretador");
 				ponteiroInstrucao = -1;
 				return;
 			}
@@ -528,6 +548,7 @@ public class Operacoes {
 
 		default:
 			System.out.println("instrução incorreta!");
+			textoSaida = textoSaida.concat("\nInstrução incorreta!");
 			break;
 		}
 	}
@@ -565,7 +586,7 @@ public class Operacoes {
 				return instr;
 			}
 		}
-		throw new Exception("ERROR: The label - '" + rotulo + "' could not be resolved");
+		throw new Exception("ERRO: o rótulo - '" + rotulo + "' pode estar errado");
 	}
 
 	public String obterDado(String enderecoInicial, int tamanho) {
