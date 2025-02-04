@@ -93,6 +93,10 @@ public class ViewController implements Initializable {
 	
 	@FXML
 	public void onBtLimpar() throws Exception{
+		memoria = new Memoria();
+		registrador = new Registrador();
+		textoArea.clear();
+		saida.clear();
 	}
 	
 	@FXML
