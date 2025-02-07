@@ -19,6 +19,9 @@ public class Func {
             if ((valor & (1 << (bits - 1))) != 0) {
                 valor -= (1 << bits);
             }
+            if(Integer.toString(valor) == null) {
+        		return 0;
+        	}
             return valor;
         } catch (Exception e) {
             return null;
@@ -70,7 +73,7 @@ public class Func {
     public static String preencherZeros(String endereco, int tam) {
     	String resultado = endereco;
     	if(endereco == null) {
-    		return null;
+    		return "000000";
     	}
     	if(endereco.length() < tam) {
     		for(int i=endereco.length(); i<tam; i++) {

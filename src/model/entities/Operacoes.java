@@ -37,7 +37,6 @@ public class Operacoes {
 			return;
 		}
 		ponteiroInstrucao = 0;
-
 		for (Instrucao instrucao : instrucoes) {
 			if (instrucao.getNome().equals("START")) { // no start, deve ter um endereço inicial na memoria
 				if (instrucao.getArgs().get(0).length() != comprimentoEndereco) {
@@ -104,8 +103,8 @@ public class Operacoes {
 		List<Integer> tokens = Arrays.asList(2, 4, 8, 10, 22, 24, 36, 38);
 		
 		if (!tokens.contains(token_Instrucao) && argumentos_Instrucao.size() != 0 
-				&& argumentos_Instrucao.get(0).substring(0, 1) != "X" && argumentos_Instrucao.get(0).substring(0, 1) != "#") {
-			if (argumentos_Instrucao.get(0).substring(0, 1) == "@") {
+				&& !argumentos_Instrucao.get(0).substring(0, 1).equals("X") && !argumentos_Instrucao.get(0).substring(0, 1).equals("#")) {
+			if (argumentos_Instrucao.get(0).substring(0, 1).equals("@")) {
 				instrucao_atual = obterInstrucao(argumentos_Instrucao.get(0).substring(1));
 			} else {
 				instrucao_atual = obterInstrucao(argumentos_Instrucao.get(0));
@@ -124,7 +123,6 @@ public class Operacoes {
 		usar_Token(token_Instrucao, nome_Instrucao, endereco, tamanho_atual, argumentos_Instrucao,
 				linha_Instrucao.getNumero_linha());
 
-		// Find next instruction and set PC to its address
 		int proximoPonteiroInstrucao = ponteiroInstrucao;
 		while (proximoPonteiroInstrucao < instrucoes.size()
 				&& (instrucoes.get(proximoPonteiroInstrucao).getNome().equals("START")
@@ -193,11 +191,12 @@ public class Operacoes {
 		String dadoHexa;
 
 		if (enderecoInicial == null) {
-			if (argumentos.get(0).substring(0, 1) == "#") {
+			if (argumentos.get(0).substring(0, 1).equals("#")) {
 				int val = Integer.parseInt(argumentos.get(0).substring(1));
 				dadoHexa = Integer.toHexString(val).toUpperCase();
+				dadoHexa = Func.preencherZeros(dadoHexa, 6);
 			} else {
-				dadoHexa = argumentos.get(0).substring(1);
+				dadoHexa = argumentos.get(0);
 			}
 		} else {
 			dadoHexa = obterDado(enderecoInicial, tamanhoAtual);
@@ -533,7 +532,7 @@ public class Operacoes {
 		String aux = Func.preencherZeros(endereco_inicial, 6);
 
 		// endereçamento indexado
-		if (argumentos.size() == 2 && argumentos.get(1) == "X") {
+		if (argumentos.size() == 2 && argumentos.get(1).equals("X")) {
 			String valorX = registradores.getRegistrador("X");
 			String endereco = Func.somarHexa(valorX, aux);
 			endereco = Func.preencherZeros(endereco, 4);
@@ -541,16 +540,16 @@ public class Operacoes {
 		}
 
 		// operando imediato
-		if (argumentos.size() != 0 && argumentos.get(0).substring(0) == "#") {
+		if (argumentos.size() != 0 && argumentos.get(0).substring(0, 1).equals("#")) {
 			return null;
 		}
 
 		// Endereçamento indireto
-		if (argumentos.size() != 0 && argumentos.get(0).substring(0, 1) == "@") {
+		if (argumentos.size() != 0 && argumentos.get(0).substring(0, 1).equals("@")) {
 			Instrucao instrucao = obterInstrucao(argumentos.get(0).substring(1));
 			String x = Func.preencherZeros("1", comprimentoEndereco);
 			String endereco = conjuntoMemoria.getMemoria(instrucao.getEndereco())
-					+ conjuntoMemoria.getMemoria(Func.somarHexa(instrucao.getEndereco(), x));
+					.concat(conjuntoMemoria.getMemoria(Func.somarHexa(instrucao.getEndereco(), x)));
 			return endereco;
 		}
 		return endereco_inicial;

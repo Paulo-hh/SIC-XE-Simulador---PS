@@ -14,7 +14,6 @@ public class Registrador {
 		registradores.put("B", "000000");
 		registradores.put("S", "000000");
 		registradores.put("T", "000000");
-		registradores.put("F", "000000000000");
 		registradores.put("PC", "000000");	
 	}
 	
@@ -48,20 +47,14 @@ public class Registrador {
 					novo_valor.concat(valor.substring(i, i+1));
 				}
 				
-				registradores.remove(reg);
 				registradores.put(reg, novo_valor);
 				return true;
 			}
 			
-			registradores.remove(reg);
 			registradores.put(reg, valor);
 			return true;
 		}
 		return false;
-	}
-
-	public void imprimir_registradores() {
-		registradores.forEach((chave, valor) -> System.out.println(chave + " " + Func.hexa_para_Int(valor)));
 	}
 	
 }

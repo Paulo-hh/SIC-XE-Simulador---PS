@@ -128,7 +128,7 @@ public class ViewController implements Initializable {
     }
     
     public void mostrarRegistradores() {
-    	A.setText(Func.hexa_para_Int(registrador.getRegistrador("A")).toString());
+        A.setText(Func.hexa_para_Int(registrador.getRegistrador("A")).toString());
     	X.setText(Func.hexa_para_Int(registrador.getRegistrador("X")).toString());
     	L.setText(Func.hexa_para_Int(registrador.getRegistrador("L")).toString());
     	B.setText(Func.hexa_para_Int(registrador.getRegistrador("B")).toString());
