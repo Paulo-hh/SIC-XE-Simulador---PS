@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +19,7 @@ import model.entities.Func;
 import model.entities.Instrucao;
 import model.entities.ListaMemoria;
 import model.entities.Memoria;
+import model.entities.Montador;
 import model.entities.Operacoes;
 import model.entities.Registrador;
 
@@ -27,8 +27,11 @@ public class ViewController implements Initializable {
 	
 	private List<Instrucao> lista_instrucao = new ArrayList<>();
 	private Registrador registrador = new Registrador();
-	private Operacoes operacao;
+	private Montador montador;
 	private Memoria memoria = new Memoria();
+	
+	public ViewController() {
+	}
 		
 	@FXML
 	private TableView<ListaMemoria> tableView = new TableView<ListaMemoria>();
@@ -81,10 +84,10 @@ public class ViewController implements Initializable {
 	@FXML
 	public void onBtRodarAction() throws Exception {
 		while (true) {
-			boolean ok = operacao.executar_Proxima_Instrucao();
+			boolean ok = montador.executar_Proxima_Instrucao();
 			mostrarRegistradores();
 	        tableView.setItems(getLista());
-	    	saida.setText(operacao.getTextoSaida());
+	    	saida.setText(montador.getTextoSaida());
 			if (ok == false) {
 				break;
 			}
@@ -103,17 +106,17 @@ public class ViewController implements Initializable {
 	public void onBtEnviarAction() throws Exception {
 		String texto = textoArea.getText().replaceAll("\n", System.getProperty("line.separator"));
 		lista_instrucao = Instrucao.lerTexto(texto);
-		operacao = new Operacoes(lista_instrucao, memoria, registrador);
-		operacao.atribuirEndereco();
-    	saida.setText(operacao.getTextoSaida());
+		montador = new Montador(lista_instrucao, memoria, registrador);
+		montador.atribuirEndereco();
+    	saida.setText(montador.getTextoSaida());
 	}
 	
 	@FXML
 	public void onBtProximoAction() throws Exception {
-		operacao.executar_Proxima_Instrucao();
+		montador.executar_Proxima_Instrucao();
 		mostrarRegistradores();
         tableView.setItems(getLista());
-    	saida.setText(operacao.getTextoSaida());
+    	saida.setText(montador.getTextoSaida());
 	}
 	
     @Override

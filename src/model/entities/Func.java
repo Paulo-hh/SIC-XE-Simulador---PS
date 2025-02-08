@@ -1,5 +1,7 @@
 package model.entities;
 
+import java.util.List;
+
 public class Func {
     
     public static String encontrarValor(int valor, String hexaValor, int tamanho) {
@@ -110,4 +112,13 @@ public class Func {
     		}
     	}
     }
+    
+    public static Instrucao obterInstrucao(String rotulo, List<Instrucao> instrucoes) throws Exception {
+		for (Instrucao instr : instrucoes) {
+			if (instr.getRotulo().equals(rotulo)) {
+				return instr;
+			}
+		}
+		throw new Exception("ERRO: o rótulo - '" + rotulo + "' pode estar errado");
+	}
 }
