@@ -21,13 +21,17 @@ public class Montador{
 	public String getTextoSaida() {
 		return textoSaida;
 	}
+	
+	public List<Instrucao> getInstrucoes(){
+		return instrucoes;
+	}
 
 	public Montador(List<Instrucao> arrayInstrucoes, Memoria memoria, Registrador regs) {
 		arrayInstrucoes.forEach(i -> instrucoes.add(i));
 		this.conjuntoMemoria = memoria;
 		this.registradores = regs;
 		this.proximoEndereco = "0000";
-		op = new Operacoes(instrucoes, conjuntoMemoria, registradores, textoSaida, ponteiroInstrucao);
+		op = new Operacoes(textoSaida, ponteiroInstrucao);
 	}
 	
 	public void atribuirEndereco() {
@@ -105,9 +109,9 @@ public class Montador{
 		if (!tokens.contains(token_Instrucao) && argumentos_Instrucao.size() != 0 
 				&& !argumentos_Instrucao.get(0).substring(0, 1).equals("X") && !argumentos_Instrucao.get(0).substring(0, 1).equals("#")) {
 			if (argumentos_Instrucao.get(0).substring(0, 1).equals("@")) {
-				instrucao_atual = Func.obterInstrucao(argumentos_Instrucao.get(0).substring(1), instrucoes);
+				instrucao_atual = Func.obterInstrucao(argumentos_Instrucao.get(0).substring(1));
 			} else {
-				instrucao_atual = Func.obterInstrucao(argumentos_Instrucao.get(0), instrucoes);
+				instrucao_atual = Func.obterInstrucao(argumentos_Instrucao.get(0));
 			}
 			tamanho_atual = (instrucao_atual.getNome().equals("WORD")) ? 3 : 0;
 		}
@@ -120,17 +124,12 @@ public class Montador{
 				? resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao) 
 				: resolverEndereco(null, argumentos_Instrucao);
 		
-		op.setConjuntoMemoria(conjuntoMemoria);
-		op.setRegistradores(registradores);
 		op.setPonteiroInstrucao(ponteiroInstrucao);
 		op.setTextoSaida(textoSaida);
-		
 				
 		op.usar_Token(token_Instrucao, nome_Instrucao, endereco, tamanho_atual, argumentos_Instrucao,
-				linha_Instrucao.getNumero_linha());
+				linha_Instrucao.getNumero_linha(), conjuntoMemoria, registradores);
 		
-		conjuntoMemoria = op.getConjuntoMemoria();
-		registradores = op.getRegistradores();
 		textoSaida = op.getTextoSaida();
 		ponteiroInstrucao = op.getPonteiroInstrucao();
 
@@ -218,7 +217,7 @@ public class Montador{
 
 		// Endereçamento indireto
 		if (argumentos.size() != 0 && argumentos.get(0).substring(0, 1).equals("@")) {
-			Instrucao instrucao = Func.obterInstrucao(argumentos.get(0).substring(1), instrucoes);
+			Instrucao instrucao = Func.obterInstrucao(argumentos.get(0).substring(1));
 			String x = Func.preencherZeros("1", comprimentoEndereco);
 			String endereco = conjuntoMemoria.getMemoria(instrucao.getEndereco())
 					.concat(conjuntoMemoria.getMemoria(Func.somarHexa(instrucao.getEndereco(), x)));

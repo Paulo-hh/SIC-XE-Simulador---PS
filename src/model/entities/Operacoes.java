@@ -1,7 +1,6 @@
 package model.entities;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,18 +8,9 @@ public class Operacoes{
 
 	private static String palavrasCondicoes = "";
 	private static final List<String> condicoes = Arrays.asList("LT", "GT", "EQ");
-	private List<Instrucao> instrucoes = new ArrayList<>();
-	private Memoria conjuntoMemoria;
-	private Registrador registradores;
 	private String textoSaida;
 	private static int ponteiroAnterior = -1;
-	private static final int comprimentoEndereco = 4;
 	private int ponteiroInstrucao;
-
-
-	public void setInstrucoes(List<Instrucao> instrucoes) {
-		this.instrucoes = instrucoes;
-	}
 
 	public static int getPonteiroAnterior() {
 		return ponteiroAnterior;
@@ -30,24 +20,8 @@ public class Operacoes{
 		Operacoes.ponteiroAnterior = ponteiroAnterior;
 	}
 
-	public void setConjuntoMemoria(Memoria conjuntoMemoria) {
-		this.conjuntoMemoria = conjuntoMemoria;
-	}
-
 	public void setTextoSaida(String textoSaida) {
 		this.textoSaida = textoSaida;
-	}
-
-	public Registrador getRegistradores() {
-		return registradores;
-	}
-
-	public void setRegistradores(Registrador registradores) {
-		this.registradores = registradores;
-	}
-
-	public Memoria getConjuntoMemoria() {
-		return conjuntoMemoria;
 	}
 
 	public String getTextoSaida() {
@@ -62,17 +36,14 @@ public class Operacoes{
 		this.ponteiroInstrucao = ponteiroInstrucao;
 	}
 
-	public Operacoes(List<Instrucao> arrayInstrucoes, Memoria memoria, Registrador regs, String textoSaida, int ponteiroInstrucao) {
-		arrayInstrucoes.forEach(i -> instrucoes.add(i));
-		this.conjuntoMemoria = memoria;
-		this.registradores = regs;
+	public Operacoes(String textoSaida, int ponteiroInstrucao) {
 		this.textoSaida = textoSaida;
 		this.ponteiroInstrucao = ponteiroInstrucao;
 	}
 	
 	
 	public void usar_Token(int tokenInstrucao, String nome, String enderecoInicial, int tamanhoAtual,
-			List<String> argumentos, int numLinha) throws Exception {
+			List<String> argumentos, int numLinha, Memoria conjuntoMemoria, Registrador registradores) throws Exception {
 		String dadoHexa;
 
 		if (enderecoInicial == null) {
@@ -142,7 +113,7 @@ public class Operacoes{
 			break;
 
 		case 9: // J
-			int novoIndiceJ = Func.obterIndice(argumentos.get(0), instrucoes);
+			int novoIndiceJ = Func.obterIndice(argumentos.get(0));
 			if (novoIndiceJ == -1) {
 				System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 				System.out.println("Encerrando interpretador");
@@ -156,7 +127,7 @@ public class Operacoes{
 
 		case 10: // JEQ
 			if (palavrasCondicoes.equals(condicoes.get(2))) {
-				int novoIndiceJEQ = Func.obterIndice(argumentos.get(0), instrucoes);
+				int novoIndiceJEQ = Func.obterIndice(argumentos.get(0));
 
 				if (novoIndiceJEQ == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
@@ -172,7 +143,7 @@ public class Operacoes{
 
 		case 11: // JGT
 			if (palavrasCondicoes.equals(condicoes.get(1))) {
-				int novoIndiceJGT = Func.obterIndice(argumentos.get(0), instrucoes);
+				int novoIndiceJGT = Func.obterIndice(argumentos.get(0));
 
 				if (novoIndiceJGT == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
@@ -189,7 +160,7 @@ public class Operacoes{
 
 		case 12: // JLT
 			if (palavrasCondicoes.equals(condicoes.get(0))) {
-				int novoIndiceJLT = Func.obterIndice(argumentos.get(0), instrucoes);
+				int novoIndiceJLT = Func.obterIndice(argumentos.get(0));
 
 				if (novoIndiceJLT == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
@@ -204,9 +175,9 @@ public class Operacoes{
 			break;
 
 		case 13: // JSUB
-			int novoIndiceJSUB = Func.obterIndice(argumentos.get(0), instrucoes);
+			int novoIndiceJSUB = Func.obterIndice(argumentos.get(0));
 			registradores.setRegistrador("L", registradores.getRegistrador("PC"));
-			registradores.setRegistrador("PC", Func.obterInstrucao(argumentos.get(0), instrucoes).getEndereco());
+			registradores.setRegistrador("PC", Func.obterInstrucao(argumentos.get(0)).getEndereco());
 			ponteiroAnterior = ponteiroInstrucao;
 			ponteiroInstrucao = novoIndiceJSUB;
 
@@ -277,7 +248,7 @@ public class Operacoes{
 			break;
 
 		case 25: // RSUB
-			this.registradores.setRegistrador("PC", registradores.getRegistrador("L"));
+			registradores.setRegistrador("PC", registradores.getRegistrador("L"));
 
 			if (ponteiroAnterior == -1) {
 				System.out.println("ERRO: Retorno ilegal na linha na linha " + numLinha);

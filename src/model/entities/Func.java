@@ -5,8 +5,13 @@ import java.util.List;
 
 public class Func {
     private static final int comprimentoEndereco = 4;
+    private static List<Instrucao> instrucoes;
 	
-    public static String encontrarValor(int valor, String hexaValor, int tamanho) {
+    public static void setInstrucoes(List<Instrucao> instrucoes) {
+		Func.instrucoes = instrucoes;
+	}
+
+	public static String encontrarValor(int valor, String hexaValor, int tamanho) {
         String novoHexa = hexaValor;
         if (valor >= 0) {
             novoHexa = Func.preencherZeros(novoHexa, tamanho * 2);
@@ -72,7 +77,7 @@ public class Func {
         return listaBytes;
     }
     
-    public static int obterIndice(String rotulo, List<Instrucao> instrucoes) {
+    public static int obterIndice(String rotulo) {
 		for (int i = 0; i < instrucoes.size(); i++) {
 			if (instrucoes.get(i).getRotulo().equals(rotulo)) {
 				return i;
@@ -141,7 +146,7 @@ public class Func {
     	}
     }
     
-    public static Instrucao obterInstrucao(String rotulo, List<Instrucao> instrucoes) throws Exception {
+    public static Instrucao obterInstrucao(String rotulo) throws Exception {
 		for (Instrucao instr : instrucoes) {
 			if (instr.getRotulo().equals(rotulo)) {
 				return instr;
