@@ -7,18 +7,37 @@ import java.util.List;
 
 public class Operacoes{
 
-	private String palavrasCondicoes = "";
+	private static String palavrasCondicoes = "";
 	private static final List<String> condicoes = Arrays.asList("LT", "GT", "EQ");
 	private List<Instrucao> instrucoes = new ArrayList<>();
 	private Memoria conjuntoMemoria;
 	private Registrador registradores;
 	private String textoSaida;
-	private int ponteiroAnterior = -1;
+	private static int ponteiroAnterior = -1;
 	private static final int comprimentoEndereco = 4;
 	private int ponteiroInstrucao;
 
-	
-	
+
+	public void setInstrucoes(List<Instrucao> instrucoes) {
+		this.instrucoes = instrucoes;
+	}
+
+	public static int getPonteiroAnterior() {
+		return ponteiroAnterior;
+	}
+
+	public static void setPonteiroAnterior(int ponteiroAnterior) {
+		Operacoes.ponteiroAnterior = ponteiroAnterior;
+	}
+
+	public void setConjuntoMemoria(Memoria conjuntoMemoria) {
+		this.conjuntoMemoria = conjuntoMemoria;
+	}
+
+	public void setTextoSaida(String textoSaida) {
+		this.textoSaida = textoSaida;
+	}
+
 	public Registrador getRegistradores() {
 		return registradores;
 	}
@@ -65,7 +84,7 @@ public class Operacoes{
 				dadoHexa = argumentos.get(0);
 			}
 		} else {
-			dadoHexa = obterDado(enderecoInicial, tamanhoAtual);
+			dadoHexa = Func.obterDado(enderecoInicial, tamanhoAtual, conjuntoMemoria);
 		}
 
 		switch (tokenInstrucao) {
@@ -123,7 +142,7 @@ public class Operacoes{
 			break;
 
 		case 9: // J
-			int novoIndiceJ = obterIndice(argumentos.get(0));
+			int novoIndiceJ = Func.obterIndice(argumentos.get(0), instrucoes);
 			if (novoIndiceJ == -1) {
 				System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
 				System.out.println("Encerrando interpretador");
@@ -137,7 +156,7 @@ public class Operacoes{
 
 		case 10: // JEQ
 			if (palavrasCondicoes.equals(condicoes.get(2))) {
-				int novoIndiceJEQ = obterIndice(argumentos.get(0));
+				int novoIndiceJEQ = Func.obterIndice(argumentos.get(0), instrucoes);
 
 				if (novoIndiceJEQ == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
@@ -153,7 +172,7 @@ public class Operacoes{
 
 		case 11: // JGT
 			if (palavrasCondicoes.equals(condicoes.get(1))) {
-				int novoIndiceJGT = obterIndice(argumentos.get(0));
+				int novoIndiceJGT = Func.obterIndice(argumentos.get(0), instrucoes);
 
 				if (novoIndiceJGT == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
@@ -170,7 +189,7 @@ public class Operacoes{
 
 		case 12: // JLT
 			if (palavrasCondicoes.equals(condicoes.get(0))) {
-				int novoIndiceJLT = obterIndice(argumentos.get(0));
+				int novoIndiceJLT = Func.obterIndice(argumentos.get(0), instrucoes);
 
 				if (novoIndiceJLT == -1) {
 					System.out.println("ERRO: Salto ilegal para rótulo na linha " + numLinha);
@@ -185,7 +204,7 @@ public class Operacoes{
 			break;
 
 		case 13: // JSUB
-			int novoIndiceJSUB = obterIndice(argumentos.get(0));
+			int novoIndiceJSUB = Func.obterIndice(argumentos.get(0), instrucoes);
 			registradores.setRegistrador("L", registradores.getRegistrador("PC"));
 			registradores.setRegistrador("PC", Func.obterInstrucao(argumentos.get(0), instrucoes).getEndereco());
 			ponteiroAnterior = ponteiroInstrucao;
@@ -248,7 +267,7 @@ public class Operacoes{
 
 		case 23: // OR
 			int valor_OR = Integer.parseInt(registradores.getRegistrador("A"));
-			int valorMemoria = Func.hexa_para_Int(obterDado(enderecoInicial, tamanhoAtual));
+			int valorMemoria = Func.hexa_para_Int(Func.obterDado(enderecoInicial, tamanhoAtual, conjuntoMemoria));
 			valor_OR |= valorMemoria;
 			registradores.setRegistrador("A", Func.preencherZeros(Integer.toString(valor_OR), 6));
 			break;
@@ -286,7 +305,7 @@ public class Operacoes{
 		case 28: // STA
 			String valorA = registradores.getRegistrador("A");
 			String enderecoA = enderecoInicial;
-			for (String a : dividirBytes(valorA)) {
+			for (String a : Func.dividirBytes(valorA)) {
 				conjuntoMemoria.setMemoria(enderecoA, a);
 				enderecoA = Func.int_para_Hexa(Func.hexa_para_Int(enderecoA) + 1, 16);
 				enderecoA = Func.preencherZeros(enderecoA, 4);
@@ -296,7 +315,7 @@ public class Operacoes{
 		case 29: // STB
 			String valorB = registradores.getRegistrador("B");
 			String enderecoB = enderecoInicial;
-			for (String a : dividirBytes(valorB)) {
+			for (String a : Func.dividirBytes(valorB)) {
 				conjuntoMemoria.setMemoria(enderecoB, a);
 				enderecoB = Func.int_para_Hexa(Func.hexa_para_Int(enderecoB) + 1, 16);
 				enderecoB = Func.preencherZeros(enderecoB, 4);
@@ -311,7 +330,7 @@ public class Operacoes{
 		case 31: // STL
 			String valorL = registradores.getRegistrador("L");
 			String enderecoL = enderecoInicial;
-			for (String a : dividirBytes(valorL)) {
+			for (String a : Func.dividirBytes(valorL)) {
 				conjuntoMemoria.setMemoria(enderecoL, a);
 				enderecoL = Func.int_para_Hexa(Func.hexa_para_Int(enderecoL) + 1, 16);
 				enderecoL = Func.preencherZeros(enderecoL, 4);
@@ -321,7 +340,7 @@ public class Operacoes{
 		case 32: // STS
 			String valorS = registradores.getRegistrador("S");
 			String enderecoS = enderecoInicial;
-			for (String a : dividirBytes(valorS)) {
+			for (String a : Func.dividirBytes(valorS)) {
 				conjuntoMemoria.setMemoria(enderecoS, a);
 				enderecoS = Func.int_para_Hexa(Func.hexa_para_Int(enderecoS) + 1, 16);
 				enderecoS = Func.preencherZeros(enderecoS, 4);
@@ -331,7 +350,7 @@ public class Operacoes{
 		case 33: // STT
 			String valorT = registradores.getRegistrador("T");
 			String enderecoT = enderecoInicial;
-			for (String a : dividirBytes(valorT)) {
+			for (String a : Func.dividirBytes(valorT)) {
 				conjuntoMemoria.setMemoria(enderecoT, a);
 				enderecoT = Func.int_para_Hexa(Func.hexa_para_Int(enderecoT) + 1, 16);
 				enderecoT = Func.preencherZeros(enderecoT, 4);
@@ -341,7 +360,7 @@ public class Operacoes{
 		case 34: // STX
 			String valorX = registradores.getRegistrador("X");
 			String enderecoX = enderecoInicial;
-			for (String a : dividirBytes(valorX)) {
+			for (String a : Func.dividirBytes(valorX)) {
 				conjuntoMemoria.setMemoria(enderecoX, a);
 				enderecoX = Func.int_para_Hexa(Func.hexa_para_Int(enderecoX) + 1, 16);
 				enderecoX = Func.preencherZeros(enderecoX, 4);
@@ -367,7 +386,7 @@ public class Operacoes{
 		case 37: // TIX
 			int valorXTIX = Func.hexa_para_Int(registradores.getRegistrador("X"));
 			valorXTIX++;
-			int memoriaIntTIX = Func.hexa_para_Int(obterDado(enderecoInicial, tamanhoAtual));
+			int memoriaIntTIX = Func.hexa_para_Int(Func.obterDado(enderecoInicial, tamanhoAtual, conjuntoMemoria));
 
 			if (valorXTIX < memoriaIntTIX) {
 				palavrasCondicoes = condicoes.get(0); // LT
@@ -393,34 +412,6 @@ public class Operacoes{
 			textoSaida = textoSaida.concat("\nInstrução incorreta!");
 			break;
 		}
-	}
-
-	public String obterDado(String enderecoInicial, int tamanho) {
-		String endereco = enderecoInicial;
-		String memoriaStringHexa = "";
-		for (int i = 0; i < tamanho; i++) {
-			memoriaStringHexa = memoriaStringHexa.concat(conjuntoMemoria.getMemoria(endereco));
-			endereco = Func.somarHexa(endereco, Func.preencherZeros("1", comprimentoEndereco)).toUpperCase();
-			endereco = Func.preencherZeros(endereco, 4);
-		}
-		return memoriaStringHexa;
-	}
-
-	public int obterIndice(String rotulo) {
-		for (int i = 0; i < instrucoes.size(); i++) {
-			if (instrucoes.get(i).getRotulo().equals(rotulo)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public static List<String> dividirBytes(String hexaString) {
-		List<String> byteLista = new ArrayList<>();
-		for (int i = 0; i < hexaString.length(); i += 2) {
-			byteLista.add(hexaString.substring(i, Math.min(i + 2, hexaString.length())));
-		}
-		return byteLista;
 	}
 
 }

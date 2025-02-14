@@ -1,9 +1,11 @@
 package model.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Func {
-    
+    private static final int comprimentoEndereco = 4;
+	
     public static String encontrarValor(int valor, String hexaValor, int tamanho) {
         String novoHexa = hexaValor;
         if (valor >= 0) {
@@ -21,11 +23,9 @@ public class Func {
             if ((valor & (1 << (bits - 1))) != 0) {
                 valor -= (1 << bits);
             }
-            if(Integer.toString(valor) == null) {
-        		return 0;
-        	}
             return valor;
         } catch (Exception e) {
+            System.out.println("Erro na conversão de hexa para inteiro");
             return null;
         }
     }
@@ -71,6 +71,34 @@ public class Func {
         }
         return listaBytes;
     }
+    
+    public static int obterIndice(String rotulo, List<Instrucao> instrucoes) {
+		for (int i = 0; i < instrucoes.size(); i++) {
+			if (instrucoes.get(i).getRotulo().equals(rotulo)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+    
+    public static String obterDado(String enderecoInicial, int tamanho, Memoria conjuntoMemoria) {
+		String endereco = enderecoInicial;
+		String memoriaStringHexa = "";
+		for (int i = 0; i < tamanho; i++) {
+			memoriaStringHexa = memoriaStringHexa.concat(conjuntoMemoria.getMemoria(endereco));
+			endereco = Func.somarHexa(endereco, Func.preencherZeros("1", comprimentoEndereco)).toUpperCase();
+			endereco = Func.preencherZeros(endereco, 4);
+		}
+		return memoriaStringHexa;
+	}
+
+    public static List<String> dividirBytes(String hexaString) {
+		List<String> byteLista = new ArrayList<>();
+		for (int i = 0; i < hexaString.length(); i += 2) {
+			byteLista.add(hexaString.substring(i, Math.min(i + 2, hexaString.length())));
+		}
+		return byteLista;
+	}
     
     public static String preencherZeros(String endereco, int tam) {
     	String resultado = endereco;
