@@ -4,7 +4,7 @@ package model.entities;
 import java.util.Arrays;
 import java.util.List;
 
-public class Operacoes{
+public class Maquina{
 
 	private static String palavrasCondicoes = "";
 	private static final List<String> condicoes = Arrays.asList("LT", "GT", "EQ");
@@ -17,7 +17,7 @@ public class Operacoes{
 	}
 
 	public static void setPonteiroAnterior(int ponteiroAnterior) {
-		Operacoes.ponteiroAnterior = ponteiroAnterior;
+		Maquina.ponteiroAnterior = ponteiroAnterior;
 	}
 
 	public void setTextoSaida(String textoSaida) {
@@ -36,7 +36,7 @@ public class Operacoes{
 		this.ponteiroInstrucao = ponteiroInstrucao;
 	}
 
-	public Operacoes(String textoSaida, int ponteiroInstrucao) {
+	public Maquina(String textoSaida, int ponteiroInstrucao) {
 		this.textoSaida = textoSaida;
 		this.ponteiroInstrucao = ponteiroInstrucao;
 	}

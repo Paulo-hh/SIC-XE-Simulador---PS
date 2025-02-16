@@ -43,13 +43,5 @@ public class Memoria {
 		}
 		memoria.get(dec_endereco).setValor(byte_valor);
 		return true;
-	}
-	
-	public void imprimirMemoria() { 
-		for(int i=0; i<256; i++) {
-			System.out.println(i + " -> " + Func.hexa_para_Int(memoria.get(i).getValor()));
-			
-		}
-	}
-	
+	}	
 }

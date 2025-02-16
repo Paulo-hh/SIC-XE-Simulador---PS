@@ -108,3 +108,31 @@
     -fx-font-weight: bold;
     -fx-text-fill: #e74c3c;
 }
+
+/* Estilização da MenuBar */
+.menu-bar {
+    -fx-background-color: #2c8eee;
+    -fx-padding: 3px;
+    -fx-border-color: #344950;
+}
+
+/* Estilização dos Menus dentro da MenuBar */
+.menu {
+    -fx-background-color: transparent;
+    -fx-font-size: 1px;
+    -fx-font-weight: bold;
+}
+
+
+/* Estilização dos MenuItem */
+.menu-item {
+    -fx-background-color: #57ae8e;
+    -fx-text-fill: black;
+    -fx-padding: 5px 5px;
+}
+
+.menu-item:hover {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+

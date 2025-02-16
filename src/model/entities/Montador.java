@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class Montador{
 
+	private Map<String, String> tabelaSimbolo = new HashMap<>();
 	private List<Instrucao> instrucoes = new ArrayList<>();
 	private int ponteiroInstrucao = -1;
 	private static final int comprimentoEndereco = 4;
@@ -15,11 +16,22 @@ public class Montador{
 	private Registrador registradores;
 	private String proximoEndereco;
 	private String textoSaida = "programa: ";
-	Operacoes op;
+	Maquina maquina;
 
+
+	public Map<String, String> getTabelaSimbolo() {
+		return tabelaSimbolo;
+	}
 
 	public String getTextoSaida() {
 		return textoSaida;
+	}
+	
+	public void setTabelaSimbolo() {
+		textoSaida = textoSaida.concat("\n\n====== Tabela de Simbolos ======\n");
+		for(String s: tabelaSimbolo.keySet()) {
+			textoSaida = textoSaida.concat(s + " => " + tabelaSimbolo.get(s) + "\n");
+		}
 	}
 	
 	public List<Instrucao> getInstrucoes(){
@@ -31,9 +43,10 @@ public class Montador{
 		this.conjuntoMemoria = memoria;
 		this.registradores = regs;
 		this.proximoEndereco = "0000";
-		op = new Operacoes(textoSaida, ponteiroInstrucao);
+		maquina = new Maquina(textoSaida, ponteiroInstrucao);
 	}
 	
+	// PRIMEIRA PASSAGEM
 	public void atribuirEndereco() {
 		if (instrucoes == null || instrucoes.isEmpty()) {
 			textoSaida.concat("\nPor favor, carregue um arquivo");
@@ -50,6 +63,9 @@ public class Montador{
 			}
 			if (instrucao.getNome().equals("END")) {
 				continue;
+			}
+			if(!instrucao.getRotulo().equals(null)) {
+				tabelaSimbolo.put(instrucao.getRotulo(), proximoEndereco);
 			}
 
 			instrucao.setEndereco(proximoEndereco);
@@ -77,7 +93,7 @@ public class Montador{
 		}
 	}
 	
-
+	// SEGUNDA PASSAGEM
 	public Boolean executar_Proxima_Instrucao() throws Exception {
 		if (ponteiroInstrucao == -1 || ponteiroInstrucao == instrucoes.size() || 
 				instrucoes.get(ponteiroInstrucao).getNome().equals("END")) {
@@ -124,16 +140,16 @@ public class Montador{
 				? resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao) 
 				: resolverEndereco(null, argumentos_Instrucao);
 		
-		op.setPonteiroInstrucao(ponteiroInstrucao);
-		op.setTextoSaida(textoSaida);
+		maquina.setPonteiroInstrucao(ponteiroInstrucao);
+		maquina.setTextoSaida(textoSaida);
 				
-		op.usar_Token(token_Instrucao, nome_Instrucao, endereco, tamanho_atual, argumentos_Instrucao,
+		maquina.usar_Token(token_Instrucao, nome_Instrucao, endereco, tamanho_atual, argumentos_Instrucao,
 				linha_Instrucao.getNumero_linha(), conjuntoMemoria, registradores);
 		
-		textoSaida = op.getTextoSaida();
-		ponteiroInstrucao = op.getPonteiroInstrucao();
+		textoSaida = maquina.getTextoSaida();
+		ponteiroInstrucao = maquina.getPonteiroInstrucao();
 
-		int proximoPonteiroInstrucao = op.getPonteiroInstrucao();
+		int proximoPonteiroInstrucao = maquina.getPonteiroInstrucao();
 		while (proximoPonteiroInstrucao < instrucoes.size()
 				&& (instrucoes.get(proximoPonteiroInstrucao).getNome().equals("START")
 				|| instrucoes.get(proximoPonteiroInstrucao).getNome().equals("WORD"))) {
@@ -148,7 +164,7 @@ public class Montador{
 	}
 	
 
-	public static int determinar_Instrucao(String instrucao_nome) { // função para retornar os tokens
+	public static int determinar_Instrucao(String instrucao_nome) { 
 
 		Map<String, Integer> conjuntoInstrucoes = new HashMap<>();
 		conjuntoInstrucoes.put("ADD", 1);
