@@ -14,9 +14,9 @@ public class Func {
 	public static String encontrarValor(int valor, String hexaValor, int tamanho) {
         String novoHexa = hexaValor;
         if (valor >= 0) {
-            novoHexa = Func.preencherZeros(novoHexa, tamanho * 2);
+            novoHexa = Func.preencherZeros(novoHexa, 6);
         } else {
-            novoHexa = Func.preencherF(novoHexa, tamanho * 2);
+            novoHexa = Func.preencherF(novoHexa, 6);
         }
         return novoHexa;
     }
@@ -105,7 +105,7 @@ public class Func {
 		return byteLista;
 	}
     
-    public static String preencherZeros(String endereco, int tam) {
+    public static String preencherZeros(String endereco, int tam) { 
     	String resultado = endereco;
     	if(endereco == null) {
     		return "000000";
