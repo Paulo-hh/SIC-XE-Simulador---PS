@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class Montador{
 
+	private Map<String, Integer> conjuntoInstrucoes = new HashMap<>();
 	private Map<String, String> tabelaSimbolo = new HashMap<>();
 	private List<Instrucao> instrucoes = new ArrayList<>();
 	private int ponteiroInstrucao = -1;
@@ -16,9 +17,8 @@ public class Montador{
 	private Registrador registradores;
 	private String proximoEndereco;
 	private String textoSaida = "programa: ";
-	Maquina maquina;
-
-
+	private Maquina maquina;
+	
 	public Map<String, String> getTabelaSimbolo() {
 		return tabelaSimbolo;
 	}
@@ -44,6 +44,45 @@ public class Montador{
 		this.registradores = regs;
 		this.proximoEndereco = "0000";
 		maquina = new Maquina(textoSaida, ponteiroInstrucao);
+		conjuntoInstrucoes.put("ADD", 1);
+		conjuntoInstrucoes.put("ADDR", 2);
+		conjuntoInstrucoes.put("AND", 3);
+		conjuntoInstrucoes.put("CLEAR", 4);
+		conjuntoInstrucoes.put("COMP", 5);
+		conjuntoInstrucoes.put("COMPR", 6);
+		conjuntoInstrucoes.put("DIV", 7);
+		conjuntoInstrucoes.put("DIVR", 8);
+		conjuntoInstrucoes.put("J", 9);
+		conjuntoInstrucoes.put("JEQ", 10);
+		conjuntoInstrucoes.put("JGT", 11);
+		conjuntoInstrucoes.put("JLT", 12);
+		conjuntoInstrucoes.put("JSUB", 13);
+		conjuntoInstrucoes.put("LDA", 14);
+		conjuntoInstrucoes.put("LDB", 15);
+		conjuntoInstrucoes.put("LDCH", 16);
+		conjuntoInstrucoes.put("LDL", 17);
+		conjuntoInstrucoes.put("LDS", 18);
+		conjuntoInstrucoes.put("LDT", 19);
+		conjuntoInstrucoes.put("LDX", 20);
+		conjuntoInstrucoes.put("MUL", 21);
+		conjuntoInstrucoes.put("MULR", 22);
+		conjuntoInstrucoes.put("OR", 23);
+		conjuntoInstrucoes.put("RMO", 24);
+		conjuntoInstrucoes.put("RSUB", 25);
+		conjuntoInstrucoes.put("SHIFTR", 26);
+		conjuntoInstrucoes.put("SHIFTL", 27);
+		conjuntoInstrucoes.put("STA", 28);
+		conjuntoInstrucoes.put("STB", 29);
+		conjuntoInstrucoes.put("STCH", 30);
+		conjuntoInstrucoes.put("STL", 31);
+		conjuntoInstrucoes.put("STS", 32);
+		conjuntoInstrucoes.put("STT", 33);
+		conjuntoInstrucoes.put("STX", 34);
+		conjuntoInstrucoes.put("SUB", 35);
+		conjuntoInstrucoes.put("SUBR", 36);
+		conjuntoInstrucoes.put("TIX", 37);
+		conjuntoInstrucoes.put("TIXR", 38);
+		conjuntoInstrucoes.put("END", 39);
 	}
 	
 	// PRIMEIRA PASSAGEM
@@ -67,6 +106,12 @@ public class Montador{
 			if(!instrucao.getRotulo().equals(null)) {
 				tabelaSimbolo.put(instrucao.getRotulo(), proximoEndereco);
 			}
+			if(instrucao.getNome().equals("MCDEF")) {
+				continue;
+			}
+			if(instrucao.getNome().equals("MCEND")) {
+				continue;
+			}
 
 			instrucao.setEndereco(proximoEndereco);
 
@@ -81,14 +126,14 @@ public class Montador{
 					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 				}
 
-			} else if (determinar_Instrucao(instrucao.getNome()) == -1) {
-				textoSaida = textoSaida.concat("\nERRO: nome de instrução inválida na linha " + instrucao.getNumero_linha().toString());
-				textoSaida = textoSaida.concat("\nSaindo do interpretador");
-				ponteiroInstrucao = -1;
-				break;
-			} else {
+			} else if(conjuntoInstrucoes.containsKey(instrucao.getNome()) || instrucao.getNome().equals("START")
+					|| instrucao.getNome().equals("END")){
 				proximoEndereco = Func.somarHexa(proximoEndereco, Func.preencherZeros("3", comprimentoEndereco));
 				proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
+			}
+			else {
+				// colocar a chamada do processador de macros
+				
 			}
 		}
 	}
@@ -164,48 +209,7 @@ public class Montador{
 	}
 	
 
-	public static int determinar_Instrucao(String instrucao_nome) { 
-
-		Map<String, Integer> conjuntoInstrucoes = new HashMap<>();
-		conjuntoInstrucoes.put("ADD", 1);
-		conjuntoInstrucoes.put("ADDR", 2);
-		conjuntoInstrucoes.put("AND", 3);
-		conjuntoInstrucoes.put("CLEAR", 4);
-		conjuntoInstrucoes.put("COMP", 5);
-		conjuntoInstrucoes.put("COMPR", 6);
-		conjuntoInstrucoes.put("DIV", 7);
-		conjuntoInstrucoes.put("DIVR", 8);
-		conjuntoInstrucoes.put("J", 9);
-		conjuntoInstrucoes.put("JEQ", 10);
-		conjuntoInstrucoes.put("JGT", 11);
-		conjuntoInstrucoes.put("JLT", 12);
-		conjuntoInstrucoes.put("JSUB", 13);
-		conjuntoInstrucoes.put("LDA", 14);
-		conjuntoInstrucoes.put("LDB", 15);
-		conjuntoInstrucoes.put("LDCH", 16);
-		conjuntoInstrucoes.put("LDL", 17);
-		conjuntoInstrucoes.put("LDS", 18);
-		conjuntoInstrucoes.put("LDT", 19);
-		conjuntoInstrucoes.put("LDX", 20);
-		conjuntoInstrucoes.put("MUL", 21);
-		conjuntoInstrucoes.put("MULR", 22);
-		conjuntoInstrucoes.put("OR", 23);
-		conjuntoInstrucoes.put("RMO", 24);
-		conjuntoInstrucoes.put("RSUB", 25);
-		conjuntoInstrucoes.put("SHIFTR", 26);
-		conjuntoInstrucoes.put("SHIFTL", 27);
-		conjuntoInstrucoes.put("STA", 28);
-		conjuntoInstrucoes.put("STB", 29);
-		conjuntoInstrucoes.put("STCH", 30);
-		conjuntoInstrucoes.put("STL", 31);
-		conjuntoInstrucoes.put("STS", 32);
-		conjuntoInstrucoes.put("STT", 33);
-		conjuntoInstrucoes.put("STX", 34);
-		conjuntoInstrucoes.put("SUB", 35);
-		conjuntoInstrucoes.put("SUBR", 36);
-		conjuntoInstrucoes.put("TIX", 37);
-		conjuntoInstrucoes.put("TIXR", 38);
-		conjuntoInstrucoes.put("END", 39);
+	public int determinar_Instrucao(String instrucao_nome) { 
 
 		if (conjuntoInstrucoes.containsKey(instrucao_nome)) {
 			return conjuntoInstrucoes.get(instrucao_nome);
