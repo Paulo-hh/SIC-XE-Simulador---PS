@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Montador{
+public class Montador {
 
 	private Map<String, Integer> conjuntoInstrucoes = new HashMap<>();
 	private Map<String, String> tabelaSimbolo = new HashMap<>();
@@ -18,7 +18,8 @@ public class Montador{
 	private String proximoEndereco;
 	private String textoSaida = "programa: ";
 	private Maquina maquina;
-	
+	private List<Macros> tabelaDefinicaoMacros = new ArrayList<>();
+
 	public Map<String, String> getTabelaSimbolo() {
 		return tabelaSimbolo;
 	}
@@ -26,15 +27,15 @@ public class Montador{
 	public String getTextoSaida() {
 		return textoSaida;
 	}
-	
+
 	public void setTabelaSimbolo() {
 		textoSaida = textoSaida.concat("\n\n====== Tabela de Simbolos ======\n");
-		for(String s: tabelaSimbolo.keySet()) {
+		for (String s : tabelaSimbolo.keySet()) {
 			textoSaida = textoSaida.concat(s + " => " + tabelaSimbolo.get(s) + "\n");
 		}
 	}
-	
-	public List<Instrucao> getInstrucoes(){
+
+	public List<Instrucao> getInstrucoes() {
 		return instrucoes;
 	}
 
@@ -84,7 +85,50 @@ public class Montador{
 		conjuntoInstrucoes.put("TIXR", 38);
 		conjuntoInstrucoes.put("END", 39);
 	}
-	
+
+	// encontra as macros
+	public void processadorDeMacros() {
+		boolean isMacro = false;
+		List<Instrucao> macroInstrucoes = new ArrayList<>();
+		List<String> tabelaNomes = new ArrayList<>();
+		for (Instrucao instrucao : instrucoes) {
+			if (instrucao.getNome().equals("MCEND")) {
+				tabelaDefinicaoMacros.add(new Macros(macroInstrucoes));
+				tabelaNomes.add(tabelaDefinicaoMacros.get(tabelaDefinicaoMacros.size() - 1).getPrototipo().getNome());
+				macroInstrucoes.clear();
+				isMacro = false;
+			}
+			if (isMacro) {
+				macroInstrucoes.add(instrucao);
+			}
+			if (instrucao.getNome().equals("MCDEF")) {
+				isMacro = true;
+			}
+		}
+		for (Macros macro : tabelaDefinicaoMacros) {
+			isMacro = false;
+			macro.modoDeDefinicao();
+			for (Instrucao instrucao : instrucoes) {
+				if (instrucao.getNome().equals("MCDEF")) {
+					isMacro = true;
+				}
+				if (instrucao.getNome().equals("MCEND")) {
+					isMacro = false;
+				}
+				if (instrucao.getNome().equals(macro.getPrototipo().getNome()) && !isMacro) {
+					macro.modoDeExpansao(instrucao);
+				}
+			}
+			int cont = 0;
+			for (Instrucao esqueletoMacro : macro.getEsqueleto()) {
+				instrucoes.add(macro.getChamada().getNumero_linha() + cont, esqueletoMacro);
+				cont++;
+			}
+			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);
+		}
+		instrucoes.forEach(x -> System.out.println(x));
+	}
+
 	// PRIMEIRA PASSAGEM
 	public void atribuirEndereco() {
 		if (instrucoes == null || instrucoes.isEmpty()) {
@@ -103,14 +147,8 @@ public class Montador{
 			if (instrucao.getNome().equals("END")) {
 				continue;
 			}
-			if(!instrucao.getRotulo().equals(null)) {
+			if (!instrucao.getRotulo().equals(null)) {
 				tabelaSimbolo.put(instrucao.getRotulo(), proximoEndereco);
-			}
-			if(instrucao.getNome().equals("MCDEF")) {
-				continue;
-			}
-			if(instrucao.getNome().equals("MCEND")) {
-				continue;
 			}
 
 			instrucao.setEndereco(proximoEndereco);
@@ -126,27 +164,25 @@ public class Montador{
 					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 				}
 
-			} else if(conjuntoInstrucoes.containsKey(instrucao.getNome()) || instrucao.getNome().equals("START")
-					|| instrucao.getNome().equals("END")){
+			} else if (conjuntoInstrucoes.containsKey(instrucao.getNome()) || instrucao.getNome().equals("START")
+					|| instrucao.getNome().equals("END")) {
 				proximoEndereco = Func.somarHexa(proximoEndereco, Func.preencherZeros("3", comprimentoEndereco));
 				proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
-			}
-			else {
-				// colocar a chamada do processador de macros
-				
+			} else {
+
 			}
 		}
 	}
-	
+
 	// SEGUNDA PASSAGEM
 	public Boolean executar_Proxima_Instrucao() throws Exception {
-		if (ponteiroInstrucao == -1 || ponteiroInstrucao == instrucoes.size() || 
-				instrucoes.get(ponteiroInstrucao).getNome().equals("END")) {
+		if (ponteiroInstrucao == -1 || ponteiroInstrucao == instrucoes.size()
+				|| instrucoes.get(ponteiroInstrucao).getNome().equals("END")) {
 			textoSaida = textoSaida.concat("\nFim do código");
 			ponteiroInstrucao = -1;
 			return false;
 		}
-		while (instrucoes.get(ponteiroInstrucao).getNome().equals("WORD") 
+		while (instrucoes.get(ponteiroInstrucao).getNome().equals("WORD")
 				|| instrucoes.get(ponteiroInstrucao).getNome().equals("START")) {
 			ponteiroInstrucao++;
 			if (ponteiroInstrucao == instrucoes.size()) {
@@ -166,58 +202,55 @@ public class Montador{
 		int tamanho_atual;
 		textoSaida = textoSaida.concat("\nExecutando instrução: " + linha_Instrucao.getNome());
 		List<Integer> tokens = Arrays.asList(2, 4, 8, 10, 22, 24, 36, 38);
-		
-		if (!tokens.contains(token_Instrucao) && argumentos_Instrucao.size() != 0 
-				&& !argumentos_Instrucao.get(0).substring(0, 1).equals("X") && !argumentos_Instrucao.get(0).substring(0, 1).equals("#")) {
+
+		if (!tokens.contains(token_Instrucao) && argumentos_Instrucao.size() != 0
+				&& !argumentos_Instrucao.get(0).substring(0, 1).equals("X")
+				&& !argumentos_Instrucao.get(0).substring(0, 1).equals("#")) {
 			if (argumentos_Instrucao.get(0).substring(0, 1).equals("@")) {
 				instrucao_atual = Func.obterInstrucao(argumentos_Instrucao.get(0).substring(1));
 			} else {
 				instrucao_atual = Func.obterInstrucao(argumentos_Instrucao.get(0));
 			}
 			tamanho_atual = (instrucao_atual.getNome().equals("WORD")) ? 3 : 0;
-		}
-		else {
+		} else {
 			tamanho_atual = 0;
 			instrucao_atual = null;
-		} 
+		}
 
-		String endereco = (instrucao_atual != null) 
-				? resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao) 
+		String endereco = (instrucao_atual != null)
+				? resolverEndereco(instrucao_atual.getEndereco(), argumentos_Instrucao)
 				: resolverEndereco(null, argumentos_Instrucao);
-		
+
 		maquina.setPonteiroInstrucao(ponteiroInstrucao);
 		maquina.setTextoSaida(textoSaida);
-				
+
 		maquina.usar_Token(token_Instrucao, nome_Instrucao, endereco, tamanho_atual, argumentos_Instrucao,
 				linha_Instrucao.getNumero_linha(), conjuntoMemoria, registradores);
-		
+
 		textoSaida = maquina.getTextoSaida();
 		ponteiroInstrucao = maquina.getPonteiroInstrucao();
 
 		int proximoPonteiroInstrucao = maquina.getPonteiroInstrucao();
 		while (proximoPonteiroInstrucao < instrucoes.size()
 				&& (instrucoes.get(proximoPonteiroInstrucao).getNome().equals("START")
-				|| instrucoes.get(proximoPonteiroInstrucao).getNome().equals("WORD"))) {
+						|| instrucoes.get(proximoPonteiroInstrucao).getNome().equals("WORD"))) {
 			proximoPonteiroInstrucao++;
 		}
 
 		if (proximoPonteiroInstrucao < instrucoes.size()) {
 			registradores.setRegistrador("PC",
-			Func.preencherZeros(instrucoes.get(proximoPonteiroInstrucao).getEndereco(), 6));
+					Func.preencherZeros(instrucoes.get(proximoPonteiroInstrucao).getEndereco(), 6));
 		}
 		return true;
 	}
-	
 
-	public int determinar_Instrucao(String instrucao_nome) { 
+	public int determinar_Instrucao(String instrucao_nome) {
 
 		if (conjuntoInstrucoes.containsKey(instrucao_nome)) {
 			return conjuntoInstrucoes.get(instrucao_nome);
 		}
 		return -1;
 	}
-
-	
 
 	public String resolverEndereco(String endereco_inicial, List<String> argumentos) throws Exception {
 		String aux = Func.preencherZeros(endereco_inicial, 6);
@@ -244,6 +277,6 @@ public class Montador{
 			return endereco;
 		}
 		return endereco_inicial;
-	}	
+	}
 
 }

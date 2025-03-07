@@ -54,6 +54,11 @@ public class Instrucao {
 	public Integer getNumero_linha() {
 		return numero_linha;
 	}
+	
+	@Override
+	public String toString() {
+		return rotulo + "\t" + nome + "\t" + args;
+	}
 
 	public static List<Instrucao> lerTexto(String texto) {
 		List<Instrucao> lista_instrucao = new ArrayList<>();
@@ -74,4 +79,6 @@ public class Instrucao {
 		}
 		return lista_instrucao;
 	}
+	
+	
 }
