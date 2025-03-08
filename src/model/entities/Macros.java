@@ -8,17 +8,25 @@ import java.util.List;
 
 public class Macros {
 	private static List<Instrucao> esqueleto = new ArrayList<>();
+	private List<Instrucao> originalMacro = new ArrayList<>();
 	private Instrucao prototipo;
 	private Instrucao chamada;
+	
 	
 	public Macros(List<Instrucao> macro) {
 		super();
 		macro.forEach(x -> esqueleto.add(x));
-		prototipo = esqueleto.get(0);
-		System.out.println(prototipo);
+		macro.forEach(x -> originalMacro.add(x));
+		prototipo = esqueleto.get(1);
 		esqueleto.remove(0);
+		esqueleto.remove(0);
+		esqueleto.remove(esqueleto.size()-1);
 	}
 	
+	public List<Instrucao> getOriginalMacro() {
+		return originalMacro;
+	}
+
 	public Instrucao getChamada() {
 		return chamada;
 	}
@@ -44,31 +52,31 @@ public class Macros {
 	}
 	
 	public void modoDeDefinicao() {
-		int cont = 0;
 		List<String> parametros = new ArrayList<>();
 		parametros.add(prototipo.getRotulo());
 		prototipo.getArgs().forEach(x -> parametros.add(x));
 		for(Instrucao instrucaoMacro: esqueleto) {
+			int cont = 0;
 			for(String parametro: parametros) {
 				List<String> novosArgumentos = new ArrayList<>();
-				instrucaoMacro.getArgs().forEach(x -> novosArgumentos.add(x));
+				String endereco = "#" + cont;
 				if(instrucaoMacro.getRotulo().equals(parametro)) {
-					instrucaoMacro.setRotulo("#" + cont);
+					instrucaoMacro.setRotulo(endereco);
 				}
-				for(String argumentos: instrucaoMacro.getArgs()) {
-					if(argumentos.contains(parametro)) {
-						novosArgumentos.add("#" + cont);
+				for(String argumento: instrucaoMacro.getArgs()) {
+					if(argumento.equals(parametro)) {
+						novosArgumentos.add(endereco);
 					}
-					else {
-						novosArgumentos.add(argumentos);
+					else{
+						novosArgumentos.add(argumento);
 					}
+					instrucaoMacro.setArgs(novosArgumentos);
 				}
-				cont++;
-				instrucaoMacro.setArgs(novosArgumentos);
 				novosArgumentos.clear();
+				cont++;
 			}
 		}
-		saidaMacro();
+		//saidaMacro();
 	}
 	
 	public void modoDeExpansao(Instrucao chamada) {
@@ -76,23 +84,25 @@ public class Macros {
 		List<String> parametros = new ArrayList<>();
 		parametros.add(chamada.getRotulo());
 		chamada.getArgs().forEach(x -> parametros.add(x));
-		for (int cont = 0; cont < parametros.size(); cont++) {
+		for (int cont=0; cont < parametros.size(); cont++) {
+			String endereco = "#" + cont;
 			List<String> novosArgumentos = new ArrayList<>();
 			for (Instrucao esqueletoMacro : esqueleto) {
-				if (esqueletoMacro.getRotulo().equals("#" + cont)) {
+				if (esqueletoMacro.getRotulo().equals(endereco)) {
 					esqueletoMacro.setRotulo(parametros.get(cont));
 				}
 				for (String args : esqueletoMacro.getArgs()) {
-					if (args.equals("#" + cont)) {
+					if (args.equals(endereco)) {
 						novosArgumentos.add(parametros.get(cont));
 					} else {
 						novosArgumentos.add(args);
 					}
+					esqueletoMacro.setArgs(novosArgumentos);
 				}
+				novosArgumentos.clear();
 			}
-			chamada.setArgs(novosArgumentos);
-			novosArgumentos.clear();
 		}
+		parametros.clear();
 	}
 	
 	public static void saidaMacro(){

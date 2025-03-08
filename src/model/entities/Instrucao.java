@@ -29,10 +29,11 @@ public class Instrucao {
 
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
+		}
 
 	public void setArgs(List<String> args) {
-		this.args = args;
+		this.args.clear();
+		args.forEach(x -> this.args.add(x));
 	}
 
 	public String getRotulo() {

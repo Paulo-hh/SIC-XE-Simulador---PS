@@ -86,22 +86,23 @@ public class Montador {
 		conjuntoInstrucoes.put("END", 39);
 	}
 
-	// encontra as macros
+	// encontra as macros, modo normal
 	public void processadorDeMacros() {
 		boolean isMacro = false;
 		List<Instrucao> macroInstrucoes = new ArrayList<>();
 		List<String> tabelaNomes = new ArrayList<>();
 		for (Instrucao instrucao : instrucoes) {
 			if (instrucao.getNome().equals("MCEND")) {
+				macroInstrucoes.add(instrucao);
 				tabelaDefinicaoMacros.add(new Macros(macroInstrucoes));
 				tabelaNomes.add(tabelaDefinicaoMacros.get(tabelaDefinicaoMacros.size() - 1).getPrototipo().getNome());
-				macroInstrucoes.clear();
 				isMacro = false;
 			}
 			if (isMacro) {
 				macroInstrucoes.add(instrucao);
 			}
 			if (instrucao.getNome().equals("MCDEF")) {
+				macroInstrucoes.add(instrucao);
 				isMacro = true;
 			}
 		}
@@ -120,6 +121,7 @@ public class Montador {
 				}
 			}
 			int cont = 0;
+			instrucoes.removeAll(macroInstrucoes);
 			for (Instrucao esqueletoMacro : macro.getEsqueleto()) {
 				instrucoes.add(macro.getChamada().getNumero_linha() + cont, esqueletoMacro);
 				cont++;
