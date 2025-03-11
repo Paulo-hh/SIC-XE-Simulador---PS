@@ -87,7 +87,6 @@ public class Montador {
 		conjuntoInstrucoes.put("END", 39);
 	}
 
-	// encontra as macros, modo normal
 	public void processadorDeMacros() {
 		boolean isMacro = false;
 		int pilha = 0;
@@ -169,7 +168,7 @@ public class Montador {
 			}
 			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);			
 		}
-		instrucoes.forEach(x -> System.out.println(x));
+		Func.saidaMacro(instrucoes);
 	}
 
 	// PRIMEIRA PASSAGEM

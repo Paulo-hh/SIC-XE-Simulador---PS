@@ -1,5 +1,8 @@
 package model.entities;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +86,6 @@ public class Macros {
 				cont++;
 			}
 		}
-		//saidaMacro();
 	}
 	
 	public void modoDeExpansao(Instrucao chamada) {
@@ -111,19 +113,5 @@ public class Macros {
 		}
 		parametros.clear();
 	}
-	/*
-	public static void saidaMacro(){
-		String path = "C:\\Temp\\ws-eclipse\\PS__Trabalho\\src\\Saida\\MASMAPRG.ASM";
-		try(BufferedWriter bw = new BufferedWriter(new FileWriter(path))){
-			for(Instrucao instrucaoMacros: esqueleto) {
-				bw.write(instrucaoMacros.getRotulo() + " ");
-				bw.write(instrucaoMacros.getNome() + " ");
-				bw.write(instrucaoMacros.getEndereco() + "\n");
-			}
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-	}*/
 	
 }
