@@ -165,8 +165,13 @@ public class Func {
 			for(Instrucao instrucao: instrucoes) {
 				bw.write(instrucao.getRotulo() + "\t");
 				bw.write(instrucao.getNome() + "\t");
-				for(String str: instrucao.getArgs()) {
-					bw.write(str + ",");
+				for(int cont=0; cont<instrucao.getArgs().size(); cont++) {
+					if(cont < instrucao.getArgs().size() - 1) {
+						bw.write(instrucao.getArgs().get(cont) + ",");
+					}
+					else {
+						bw.write(instrucao.getArgs().get(cont));
+					}
 				}
 				bw.newLine();
 			}

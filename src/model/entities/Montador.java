@@ -88,6 +88,7 @@ public class Montador {
 	}
 
 	public void processadorDeMacros() {
+		//ETAPA 1
 		boolean isMacro = false;
 		int pilha = 0;
 		List<Instrucao> macroInstrucoes = new LinkedList<>();
@@ -122,6 +123,7 @@ public class Montador {
 				pilha++;
 			}
 		}
+		// ETAPA 2
 		boolean externa = false;
 		List<Instrucao> adicionarMacroExterna = new ArrayList<>();
 		String prototipoAnterior = null;
