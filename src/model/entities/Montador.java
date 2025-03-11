@@ -3,6 +3,7 @@ package model.entities;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -89,44 +90,84 @@ public class Montador {
 	// encontra as macros, modo normal
 	public void processadorDeMacros() {
 		boolean isMacro = false;
-		List<Instrucao> macroInstrucoes = new ArrayList<>();
+		int pilha = 0;
+		List<Instrucao> macroInstrucoes = new LinkedList<>();
+		List<List<Instrucao>> pilhaInstrucoes = new ArrayList<>();
 		List<String> tabelaNomes = new ArrayList<>();
 		for (Instrucao instrucao : instrucoes) {
 			if (instrucao.getNome().equals("MCEND")) {
 				macroInstrucoes.add(instrucao);
-				tabelaDefinicaoMacros.add(new Macros(macroInstrucoes));
+				pilhaInstrucoes.add(new ArrayList<Instrucao>(macroInstrucoes));
+				tabelaDefinicaoMacros.add(new Macros(macroInstrucoes, pilha));
+				pilha--;
 				tabelaNomes.add(tabelaDefinicaoMacros.get(tabelaDefinicaoMacros.size() - 1).getPrototipo().getNome());
-				isMacro = false;
+				if(pilha > 0) {
+					macroInstrucoes.clear();
+					pilhaInstrucoes.get(pilhaInstrucoes.size()-2).forEach(x -> macroInstrucoes.add(x));
+					continue;
+				}
+				else {
+					isMacro = false;
+				}
 			}
-			if (isMacro) {
+			else if (isMacro && !instrucao.getNome().equals("MCDEF")) {
 				macroInstrucoes.add(instrucao);
 			}
-			if (instrucao.getNome().equals("MCDEF")) {
+			else if (instrucao.getNome().equals("MCDEF")) {
+				if(pilha > 0) {
+					pilhaInstrucoes.add(new ArrayList<Instrucao>(macroInstrucoes));
+					macroInstrucoes.clear();
+				}
 				macroInstrucoes.add(instrucao);
 				isMacro = true;
+				pilha++;
 			}
 		}
+		boolean externa = false;
+		List<Instrucao> adicionarMacroExterna = new ArrayList<>();
+		String prototipoAnterior = null;
 		for (Macros macro : tabelaDefinicaoMacros) {
-			isMacro = false;
+			if(externa) {
+				List<Instrucao> auxiliar = new ArrayList<>();
+				int pos;
+				for(Instrucao instrucaoEsqueleto: macro.getEsqueleto()) {
+					if(instrucaoEsqueleto.getNome().equals(prototipoAnterior)) {
+						adicionarMacroExterna.forEach(x -> auxiliar.add(x));
+					}
+					else {
+						auxiliar.add(instrucaoEsqueleto);
+					}
+				}
+				macro.setEsqueleto(auxiliar);
+				externa = false;
+			}
+			pilha = 1;
 			macro.modoDeDefinicao();
 			for (Instrucao instrucao : instrucoes) {
 				if (instrucao.getNome().equals("MCDEF")) {
-					isMacro = true;
+					pilha++;
 				}
 				if (instrucao.getNome().equals("MCEND")) {
-					isMacro = false;
+					pilha--;
 				}
-				if (instrucao.getNome().equals(macro.getPrototipo().getNome()) && !isMacro) {
+				if (instrucao.getNome().equals(macro.getPrototipo().getNome()) && macro.getNivelPilha() == pilha) {
 					macro.modoDeExpansao(instrucao);
 				}
 			}
 			int cont = 0;
-			instrucoes.removeAll(macroInstrucoes);
+			instrucoes.removeAll(macro.getOriginalMacro());
 			for (Instrucao esqueletoMacro : macro.getEsqueleto()) {
-				instrucoes.add(macro.getChamada().getNumero_linha() + cont, esqueletoMacro);
-				cont++;
+				if(macro.getNivelPilha() == 1) {
+					instrucoes.add(macro.getChamada().getNumero_linha() + cont, esqueletoMacro);
+					cont++;
+				}
+				else {
+					adicionarMacroExterna.add(esqueletoMacro);
+					externa = true;
+					prototipoAnterior = macro.getChamada().getNome();
+				}
 			}
-			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);
+			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);			
 		}
 		instrucoes.forEach(x -> System.out.println(x));
 	}

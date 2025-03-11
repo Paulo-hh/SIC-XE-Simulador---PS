@@ -1,19 +1,17 @@
 package model.entities;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Macros {
-	private static List<Instrucao> esqueleto = new ArrayList<>();
+	private List<Instrucao> esqueleto = new ArrayList<>();
 	private List<Instrucao> originalMacro = new ArrayList<>();
 	private Instrucao prototipo;
 	private Instrucao chamada;
+	private int nivelPilha;
 	
 	
-	public Macros(List<Instrucao> macro) {
+	public Macros(List<Instrucao> macro, int nivelPilha) {
 		super();
 		macro.forEach(x -> esqueleto.add(x));
 		macro.forEach(x -> originalMacro.add(x));
@@ -21,6 +19,7 @@ public class Macros {
 		esqueleto.remove(0);
 		esqueleto.remove(0);
 		esqueleto.remove(esqueleto.size()-1);
+		this.nivelPilha = nivelPilha;
 	}
 	
 	public List<Instrucao> getOriginalMacro() {
@@ -31,6 +30,14 @@ public class Macros {
 		return chamada;
 	}
 	
+	public int getNivelPilha() {
+		return nivelPilha;
+	}
+
+	public void setNivelPilha(int nivelPilha) {
+		this.nivelPilha = nivelPilha;
+	}
+
 	public void setChamada(Instrucao chamada) {
 		this.chamada = chamada;
 	}
@@ -40,7 +47,7 @@ public class Macros {
 	}
 
 	public void setEsqueleto(List<Instrucao> macro) {
-		Macros.esqueleto = macro;
+		this.esqueleto = macro;
 	}
 
 	public Instrucao getPrototipo() {
@@ -104,7 +111,7 @@ public class Macros {
 		}
 		parametros.clear();
 	}
-	
+	/*
 	public static void saidaMacro(){
 		String path = "C:\\Temp\\ws-eclipse\\PS__Trabalho\\src\\Saida\\MASMAPRG.ASM";
 		try(BufferedWriter bw = new BufferedWriter(new FileWriter(path))){
@@ -117,6 +124,6 @@ public class Macros {
 		catch(IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 }
