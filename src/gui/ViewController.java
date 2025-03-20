@@ -20,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import model.entities.Func;
 import model.entities.Instrucao;
+import model.entities.Ligador;
 import model.entities.ListaMemoria;
 import model.entities.Memoria;
 import model.entities.Montador;
@@ -27,7 +28,9 @@ import model.entities.Registrador;
 
 public class ViewController implements Initializable {
 	
-	private List<Instrucao> lista_instrucao = new ArrayList<>();
+	private List<Instrucao> lista_instrucao_mod1 = new ArrayList<>();
+	private List<Instrucao> lista_instrucao_mod2 = new ArrayList<>();
+	private List<Instrucao> lista_instrucoes_ligadas;
 	private Registrador registrador = new Registrador();
 	private Montador montador;
 	private Memoria memoria = new Memoria();
@@ -57,7 +60,10 @@ public class ViewController implements Initializable {
 	private TableColumn<ListaMemoria, String> colunaValor;
 	
 	@FXML
-	private TextArea textoArea;
+	private TextArea textoArea1;
+	
+	@FXML
+	private TextArea textoArea2;
 	
 	@FXML
 	private Button rodar;
@@ -113,16 +119,20 @@ public class ViewController implements Initializable {
 	public void onBtLimpar() throws Exception{
 		memoria = new Memoria();
 		registrador = new Registrador();
-		textoArea.clear();
+		textoArea1.clear();
+		textoArea2.clear();
 		saida.clear();
 	}
 	
 	@FXML
 	public void onBtEnviarAction() throws Exception {
-		String texto = textoArea.getText().replaceAll("\n", System.getProperty("line.separator"));
-		lista_instrucao = Instrucao.lerTexto(texto);
-		Func.setInstrucoes(lista_instrucao);
-		montador = new Montador(lista_instrucao, memoria, registrador);
+		String texto1 = textoArea1.getText().replaceAll("\n", System.getProperty("line.separator"));
+		lista_instrucao_mod1 = Ligador.lerTexto(texto1);
+		String texto2 = textoArea2.getText().replaceAll("\n", System.getProperty("line.separator"));
+		lista_instrucao_mod2 = Ligador.lerTexto(texto2);
+		lista_instrucoes_ligadas = Ligador.unirModulos(lista_instrucao_mod1, lista_instrucao_mod2);
+		montador = new Montador(lista_instrucoes_ligadas, memoria, registrador);
+		Func.setInstrucoes(lista_instrucoes_ligadas);
 		montador.processadorDeMacros();
 		montador.atribuirEndereco();
     	saida.setText(montador.getTextoSaida());

@@ -10,7 +10,6 @@ public class Macros {
 	private Instrucao chamada;
 	private int nivelPilha;
 	
-	
 	public Macros(List<Instrucao> macro, int nivelPilha) {
 		macro.forEach(x -> esqueleto.add(x));
 		macro.forEach(x -> originalMacro.add(x));

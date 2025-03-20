@@ -130,7 +130,6 @@ public class Montador {
 		for (Macros macro : tabelaDefinicaoMacros) {
 			if(externa) {
 				List<Instrucao> auxiliar = new ArrayList<>();
-				int pos;
 				for(Instrucao instrucaoEsqueleto: macro.getEsqueleto()) {
 					if(instrucaoEsqueleto.getNome().equals(prototipoAnterior)) {
 						adicionarMacroExterna.forEach(x -> auxiliar.add(x));
