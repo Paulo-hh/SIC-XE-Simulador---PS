@@ -8,6 +8,7 @@ public class Instrucao {
 	private String nome;
 	private List<String> args;
 	private String endereco;
+	private String binario;
 	private Integer numero_linha;
 
 	public Instrucao(String rotulo, String nome, List<String> args, String endereco, Integer numero_linha) {

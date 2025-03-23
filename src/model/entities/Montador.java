@@ -17,7 +17,7 @@ public class Montador {
 	private Memoria conjuntoMemoria;
 	private Registrador registradores;
 	private String proximoEndereco;
-	private String textoSaida = "programa: ";
+	private String textoSaida = "Processador de Macros: \n";
 	private Maquina maquina;
 	private List<Macros> tabelaDefinicaoMacros = new ArrayList<>();
 
@@ -169,16 +169,31 @@ public class Montador {
 			}
 			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);			
 		}
-		Func.saidaMacro(instrucoes);
+		for(Instrucao i: instrucoes) {
+			textoSaida = textoSaida.concat(i.getRotulo() + "\t");
+			textoSaida = textoSaida.concat(i.getNome() + "\t");
+			for(int cont=0; cont<i.getArgs().size(); cont++) {
+				if(cont < i.getArgs().size() - 1) {
+					textoSaida = textoSaida.concat(i.getArgs().get(cont) + ",");
+				}
+				else {
+					textoSaida = textoSaida.concat(i.getArgs().get(cont));
+				}
+			}
+			textoSaida = textoSaida.concat("\n");
+		}
 	}
 
 	// PRIMEIRA PASSAGEM
 	public void atribuirEndereco() {
 		if (instrucoes == null || instrucoes.isEmpty()) {
-			textoSaida.concat("\nPor favor, carregue um arquivo");
+			textoSaida.concat("\nPor favor, carregue o codigo");
 			return;
 		}
 		ponteiroInstrucao = 0;
+		
+		criarTabelaSimbolos();
+		
 		for (Instrucao instrucao : instrucoes) {
 			if (instrucao.getNome().equals("START")) { // no start, deve ter um endereço inicial na memoria
 				if (instrucao.getArgs().get(0).length() != comprimentoEndereco) {
@@ -190,10 +205,6 @@ public class Montador {
 			if (instrucao.getNome().equals("END")) {
 				continue;
 			}
-			if (!instrucao.getRotulo().equals(null)) {
-				tabelaSimbolo.put(instrucao.getRotulo(), proximoEndereco);
-			}
-
 			instrucao.setEndereco(proximoEndereco);
 
 			if (instrucao.getNome().equals("WORD")) {
@@ -207,13 +218,21 @@ public class Montador {
 					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 				}
 
-			} else if (conjuntoInstrucoes.containsKey(instrucao.getNome()) || instrucao.getNome().equals("START")
-					|| instrucao.getNome().equals("END")) {
-				proximoEndereco = Func.somarHexa(proximoEndereco, Func.preencherZeros("3", comprimentoEndereco));
-				proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
-			} else {
-
-			}
+			} else if(conjuntoInstrucoes.containsKey(instrucao.getNome())) {
+				String codObjeto = Func.int_para_Hexa(conjuntoInstrucoes.get(instrucao.getNome()), 2);
+				for(int i=0; i<instrucao.getArgs().size(); i++) {
+					if(!instrucao.getArgs().get(i).substring(0, 1).equals("#")) {
+						codObjeto = codObjeto.concat(tabelaSimbolo.get(instrucao.getArgs().get(i)));
+					}
+				}
+				codObjeto = Func.preencherZeros(codObjeto, 6);
+				for (int i = 0; i < 6; i += 2) {
+					conjuntoMemoria.setMemoria(proximoEndereco, codObjeto.substring(i, i + 2));
+					proximoEndereco = Func.somarHexa(proximoEndereco, Func.preencherZeros("1", comprimentoEndereco))
+							.toUpperCase();
+					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
+				}
+			} 
 		}
 	}
 
@@ -320,6 +339,22 @@ public class Montador {
 			return endereco;
 		}
 		return endereco_inicial;
+	}
+	
+	public void criarTabelaSimbolos() {
+		String enderecoPonteiro = "00";
+		for(Instrucao instrucao: instrucoes) {
+			if (!instrucao.getRotulo().equals(null)) {
+				if(instrucao.getNome().equals("START")) {
+					enderecoPonteiro = instrucao.getArgs().get(0).substring(2);
+					continue;
+				}
+				if(instrucao.getNome().equals("END")) {continue;}
+				tabelaSimbolo.put(instrucao.getRotulo(), enderecoPonteiro);
+				enderecoPonteiro = Func.somarHexa(enderecoPonteiro, Func.preencherZeros("3", 2));
+				enderecoPonteiro = Func.preencherZeros(enderecoPonteiro, 2);
+				}
+			}
 	}
 
 }
