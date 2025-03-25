@@ -123,12 +123,6 @@ public class ViewController implements Initializable {
     	saida.setText(montador.getTextoSaida());
 	}
 	
-	@FXML
-	public void onMenuItemTabelaSimboloAction() {
-		montador.setTabelaSimbolo();
-		saida.setText(montador.getTextoSaida());
-	}
-	
     @Override
     public void initialize (URL url, ResourceBundle rb){
     	colunaEndereco.setCellValueFactory(new PropertyValueFactory<ListaMemoria,String>("endereco"));
