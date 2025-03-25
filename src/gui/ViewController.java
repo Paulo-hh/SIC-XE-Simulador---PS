@@ -126,14 +126,18 @@ public class ViewController implements Initializable {
 	
 	@FXML
 	public void onBtEnviarAction() throws Exception {
+		montador = new Montador(memoria, registrador);
 		String texto1 = textoArea1.getText().replaceAll("\n", System.getProperty("line.separator"));
-		lista_instrucao_mod1 = Ligador.lerTexto(texto1);
+		lista_instrucao_mod1 = Ligador.lerTexto(texto1);		
+		montador.setInstrucoes(lista_instrucao_mod1);
+		lista_instrucao_mod1 = montador.processadorDeMacros();
 		String texto2 = textoArea2.getText().replaceAll("\n", System.getProperty("line.separator"));
 		lista_instrucao_mod2 = Ligador.lerTexto(texto2);
+		montador.setInstrucoes(lista_instrucao_mod2);
+		lista_instrucao_mod2 = montador.processadorDeMacros();		
 		lista_instrucoes_ligadas = Ligador.unirModulos(lista_instrucao_mod1, lista_instrucao_mod2);
-		montador = new Montador(lista_instrucoes_ligadas, memoria, registrador);
 		Func.setInstrucoes(lista_instrucoes_ligadas);
-		montador.processadorDeMacros();
+		montador.setInstrucoes(lista_instrucoes_ligadas);
 		montador.atribuirEndereco();
     	saida.setText(montador.getTextoSaida());
 	}

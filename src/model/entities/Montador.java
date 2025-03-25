@@ -20,6 +20,7 @@ public class Montador {
 	private String textoSaida = "Processador de Macros: \n";
 	private Maquina maquina;
 	private List<Macros> tabelaDefinicaoMacros = new ArrayList<>();
+	List<Integer> tokens = Arrays.asList(2, 4, 8, 10, 22, 24, 36, 38);
 
 	public Map<String, String> getTabelaSimbolo() {
 		return tabelaSimbolo;
@@ -40,8 +41,13 @@ public class Montador {
 		return instrucoes;
 	}
 
-	public Montador(List<Instrucao> arrayInstrucoes, Memoria memoria, Registrador regs) {
+	public void setInstrucoes(List<Instrucao> arrayInstrucoes) {
+		instrucoes.clear();
 		arrayInstrucoes.forEach(i -> instrucoes.add(i));
+	}
+
+	public Montador(Memoria memoria, Registrador regs) {
+		// arrayInstrucoes.forEach(i -> instrucoes.add(i));
 		this.conjuntoMemoria = memoria;
 		this.registradores = regs;
 		this.proximoEndereco = "0000";
@@ -87,8 +93,8 @@ public class Montador {
 		conjuntoInstrucoes.put("END", 39);
 	}
 
-	public void processadorDeMacros() {
-		//ETAPA 1
+	public List<Instrucao> processadorDeMacros() {
+		// ETAPA 1
 		boolean isMacro = false;
 		int pilha = 0;
 		List<Instrucao> macroInstrucoes = new LinkedList<>();
@@ -101,20 +107,17 @@ public class Montador {
 				tabelaDefinicaoMacros.add(new Macros(macroInstrucoes, pilha));
 				pilha--;
 				tabelaNomes.add(tabelaDefinicaoMacros.get(tabelaDefinicaoMacros.size() - 1).getPrototipo().getNome());
-				if(pilha > 0) {
+				if (pilha > 0) {
 					macroInstrucoes.clear();
-					pilhaInstrucoes.get(pilhaInstrucoes.size()-2).forEach(x -> macroInstrucoes.add(x));
+					pilhaInstrucoes.get(pilhaInstrucoes.size() - 2).forEach(x -> macroInstrucoes.add(x));
 					continue;
-				}
-				else {
+				} else {
 					isMacro = false;
 				}
-			}
-			else if (isMacro && !instrucao.getNome().equals("MCDEF")) {
+			} else if (isMacro && !instrucao.getNome().equals("MCDEF")) {
 				macroInstrucoes.add(instrucao);
-			}
-			else if (instrucao.getNome().equals("MCDEF")) {
-				if(pilha > 0) {
+			} else if (instrucao.getNome().equals("MCDEF")) {
+				if (pilha > 0) {
 					pilhaInstrucoes.add(new ArrayList<Instrucao>(macroInstrucoes));
 					macroInstrucoes.clear();
 				}
@@ -128,13 +131,12 @@ public class Montador {
 		List<Instrucao> adicionarMacroExterna = new ArrayList<>();
 		String prototipoAnterior = null;
 		for (Macros macro : tabelaDefinicaoMacros) {
-			if(externa) {
+			if (externa) {
 				List<Instrucao> auxiliar = new ArrayList<>();
-				for(Instrucao instrucaoEsqueleto: macro.getEsqueleto()) {
-					if(instrucaoEsqueleto.getNome().equals(prototipoAnterior)) {
+				for (Instrucao instrucaoEsqueleto : macro.getEsqueleto()) {
+					if (instrucaoEsqueleto.getNome().equals(prototipoAnterior)) {
 						adicionarMacroExterna.forEach(x -> auxiliar.add(x));
-					}
-					else {
+					} else {
 						auxiliar.add(instrucaoEsqueleto);
 					}
 				}
@@ -157,31 +159,32 @@ public class Montador {
 			int cont = 0;
 			instrucoes.removeAll(macro.getOriginalMacro());
 			for (Instrucao esqueletoMacro : macro.getEsqueleto()) {
-				if(macro.getNivelPilha() == 1) {
+				if (macro.getNivelPilha() == 1) {
 					instrucoes.add(macro.getChamada().getNumero_linha() + cont, esqueletoMacro);
 					cont++;
-				}
-				else {
+				} else {
 					adicionarMacroExterna.add(esqueletoMacro);
 					externa = true;
 					prototipoAnterior = macro.getChamada().getNome();
 				}
 			}
-			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);			
+			instrucoes.remove(macro.getChamada().getNumero_linha() + cont);
 		}
-		for(Instrucao i: instrucoes) {
+		textoSaida = textoSaida.concat("\nMódulo:\n");
+		for (Instrucao i : instrucoes) {
 			textoSaida = textoSaida.concat(i.getRotulo() + "\t");
 			textoSaida = textoSaida.concat(i.getNome() + "\t");
-			for(int cont=0; cont<i.getArgs().size(); cont++) {
-				if(cont < i.getArgs().size() - 1) {
+			for (int cont = 0; cont < i.getArgs().size(); cont++) {
+				if (cont < i.getArgs().size() - 1) {
 					textoSaida = textoSaida.concat(i.getArgs().get(cont) + ",");
-				}
-				else {
+				} else {
 					textoSaida = textoSaida.concat(i.getArgs().get(cont));
 				}
 			}
 			textoSaida = textoSaida.concat("\n");
 		}
+		tabelaDefinicaoMacros.clear();
+		return new ArrayList<Instrucao>(instrucoes);
 	}
 
 	// PRIMEIRA PASSAGEM
@@ -191,9 +194,9 @@ public class Montador {
 			return;
 		}
 		ponteiroInstrucao = 0;
-		
+
 		criarTabelaSimbolos();
-		
+
 		for (Instrucao instrucao : instrucoes) {
 			if (instrucao.getNome().equals("START")) { // no start, deve ter um endereço inicial na memoria
 				if (instrucao.getArgs().get(0).length() != comprimentoEndereco) {
@@ -218,11 +221,13 @@ public class Montador {
 					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 				}
 
-			} else if(conjuntoInstrucoes.containsKey(instrucao.getNome())) {
+			} else if (conjuntoInstrucoes.containsKey(instrucao.getNome())) {
 				String codObjeto = Func.int_para_Hexa(conjuntoInstrucoes.get(instrucao.getNome()), 2);
-				for(int i=0; i<instrucao.getArgs().size(); i++) {
-					if(!instrucao.getArgs().get(i).substring(0, 1).equals("#")) {
-						codObjeto = codObjeto.concat(tabelaSimbolo.get(instrucao.getArgs().get(i)));
+				if (!tokens.contains(conjuntoInstrucoes.get(instrucao.getNome()))) {
+					for (int i = 0; i < instrucao.getArgs().size(); i++) {
+						if (!instrucao.getArgs().get(i).substring(0, 1).equals("#")) {
+							codObjeto = codObjeto.concat(tabelaSimbolo.get(instrucao.getArgs().get(i)));
+						}
 					}
 				}
 				codObjeto = Func.preencherZeros(codObjeto, 6);
@@ -232,7 +237,7 @@ public class Montador {
 							.toUpperCase();
 					proximoEndereco = Func.preencherZeros(proximoEndereco, comprimentoEndereco);
 				}
-			} 
+			}
 		}
 	}
 
@@ -263,7 +268,6 @@ public class Montador {
 		int token_Instrucao = determinar_Instrucao(nome_Instrucao);
 		int tamanho_atual;
 		textoSaida = textoSaida.concat("\nExecutando instrução: " + linha_Instrucao.getNome());
-		List<Integer> tokens = Arrays.asList(2, 4, 8, 10, 22, 24, 36, 38);
 
 		if (!tokens.contains(token_Instrucao) && argumentos_Instrucao.size() != 0
 				&& !argumentos_Instrucao.get(0).substring(0, 1).equals("X")
@@ -340,21 +344,23 @@ public class Montador {
 		}
 		return endereco_inicial;
 	}
-	
+
 	public void criarTabelaSimbolos() {
 		String enderecoPonteiro = "00";
-		for(Instrucao instrucao: instrucoes) {
+		for (Instrucao instrucao : instrucoes) {
 			if (!instrucao.getRotulo().equals(null)) {
-				if(instrucao.getNome().equals("START")) {
+				if (instrucao.getNome().equals("START")) {
 					enderecoPonteiro = instrucao.getArgs().get(0).substring(2);
 					continue;
 				}
-				if(instrucao.getNome().equals("END")) {continue;}
+				if (instrucao.getNome().equals("END")) {
+					continue;
+				}
 				tabelaSimbolo.put(instrucao.getRotulo(), enderecoPonteiro);
 				enderecoPonteiro = Func.somarHexa(enderecoPonteiro, Func.preencherZeros("3", 2));
 				enderecoPonteiro = Func.preencherZeros(enderecoPonteiro, 2);
-				}
 			}
+		}
 	}
 
 }
